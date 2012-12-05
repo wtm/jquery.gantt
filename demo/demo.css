@@ -8,3 +8,8 @@ body {
   height: 300px;
   overflow: hidden;
 }
+
+.container .labels {
+  position: relative;
+  z-index: 9999;
+}

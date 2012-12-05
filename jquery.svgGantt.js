@@ -29,10 +29,16 @@
       var sg = this,
           options = sg.options;
 
-      // Create the SVG element
+      // Clear the container
       sg.container.html("");
-      $('<div class="svgGantt"></div>').appendTo(sg.container);
-      sg.content = sg.container.find(".svgGantt");
+
+      // Create the label container
+      $('<div class="labels"></div>').appendTo(sg.container);
+      sg.labels = sg.container.find(".labels");
+
+      // Create the content element
+      $('<div class="content"></div>').appendTo(sg.container);
+      sg.content = sg.container.find(".content");
 
       // Create the canvas element for the grid
       $('<canvas class="grid"></canvas>').appendTo(sg.container).hide();
@@ -60,7 +66,8 @@
           options = sg.options,
           containerWidth = sg.container.width(),
           gridWidth = containerWidth * 3,
-          gridX = sg.views[options.view].gridX;
+          gridX = sg.views[options.view].gridX,
+          contentOffset = -(Math.floor(containerWidth / gridX) * gridX);
 
       today = options.startDate ? moment(options.startDate) : moment();
 
@@ -68,12 +75,16 @@
       sg.startMoment = today.subtract("days", Math.floor(containerWidth / gridX));
       sg.daysInGrid = gridWidth / gridX;
 
-      // Set the SVG to be within our time constraints
+      // Set the content to be within our time constraints
       sg.content.css({
         height: 500,
-        marginLeft: -(Math.floor(containerWidth / gridX) * gridX),
+        marginLeft: contentOffset,
         position: "relative",
         width: gridWidth
+      })
+
+      sg.labels.css({
+        left: contentOffset
       })
     },
 
@@ -105,18 +116,16 @@
       var sg = this,
           options = sg.options,
           daysInGrid = sg.daysInGrid,
-          $labels = $('<div class="labels"></div>'),
           gridX = sg.views[options.view].gridX;
 
-      sg.content.append($labels);
-      $labels.css({
+      sg.labels.css({
         width: "100%"
       })
 
       for(var i=0;i<daysInGrid;i++) {
         var label = moment(sg.startMoment).add("days", i).format("MMM. DD"),
             $label = $('<div class="label">'+label+'</div>');
-        $labels.append($label);
+        sg.labels.append($label);
         $label.css({
           left: gridX * i,
           position: "absolute",
@@ -150,12 +159,14 @@
             marginLeft: marginLeft,
             marginTop: marginTop
           })
+          sg.labels.css({
+            left: marginLeft
+          })
         } else if(e.type === "mouseup") {
           dragging = false;
 
           curDayOffset = parseInt(sg.content.css("margin-left")) / gridX;
           curMoment = moment(sg.startMoment).subtract("days", curDayOffset);
-          console.log(curMoment)
           options.startDate = curMoment;
           sg.init();
         }
