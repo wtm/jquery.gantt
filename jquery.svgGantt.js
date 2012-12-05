@@ -63,16 +63,15 @@
           gridX = sg.views[options.view].gridX;
 
       today = options.startDate ? moment(options.startDate) : moment();
-      today.subtract("days", 1);
 
       // Set up our time constraints
-      sg.startMoment = today.subtract("days", (containerWidth / gridX));
+      sg.startMoment = today.subtract("days", Math.floor(containerWidth / gridX));
       sg.daysInGrid = gridWidth / gridX;
 
       // Set the SVG to be within our time constraints
       sg.content.css({
         height: 500,
-        marginLeft: -(Math.round(containerWidth / gridX) * gridX),
+        marginLeft: -(Math.floor(containerWidth / gridX) * gridX),
         position: "relative",
         width: gridWidth
       })
@@ -156,8 +155,9 @@
 
           curDayOffset = parseInt(sg.content.css("margin-left")) / gridX;
           curMoment = moment(sg.startMoment).subtract("days", curDayOffset);
+          console.log(curMoment)
           options.startDate = curMoment;
-          sg.init()
+          sg.init();
         }
       })
     }
