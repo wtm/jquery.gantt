@@ -27,3 +27,13 @@ body {
   font-size: 9px;
   padding-top: 4px;
 }
+
+.toolbelt {
+  height: 50px;
+  list-style: none;
+}
+
+.toolbelt li {
+  float: left;
+  margin-right: 8px;
+}

@@ -43,4 +43,8 @@ $(document).ready(function() {
     color: "red"
   }]
   $(".container").svgGantt(stories, {currentDate: "December 1, 2012"});
+
+  $(".toolbelt a").on("click", function() {
+    $(".container").trigger("gantt-changeView", $(this).attr("class"));
+  })
 })

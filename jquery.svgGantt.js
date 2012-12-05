@@ -27,6 +27,7 @@
       var sg = this;
 
       sg.createUI(); // Create the UI elements (labels, content, grid)
+      sg.createEvents(); // Create the UI elements (labels, content, grid)
       sg.drawGrid(); // Draw the grid background
       sg.setTimePosition(); // Determine the current position in time
       sg.drawLabels(); // Draw the date labels
@@ -53,6 +54,18 @@
       // Create the canvas element for the grid
       $('<canvas class="sg-grid"></canvas>').appendTo($container).hide();
       sg.grid = $container.find(".sg-grid");
+    },
+
+    createEvents: function() {
+      var sg = this, options = sg.options,
+          $container = sg.container;
+
+      // Clear the container
+      $container.off("gantt-changeView").on("gantt-changeView", function(e, view) {
+        options.view = view;
+        console.log(view)
+        sg.init();
+      });
     },
 
     drawGrid: function() {
