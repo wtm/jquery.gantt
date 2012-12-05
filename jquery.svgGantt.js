@@ -4,8 +4,13 @@
       defaults = {
         gridColor: "#DDD",
         objectScale: 2,
-        startDate: null,
-        view: "week"
+        currentDate: null,
+        view: "week",
+        views: {
+          week: { gridX: 150, gridY: 12, format: "MMM, DD" },
+          month: { gridX: 50, gridY: 12, format: "MMM, DD" },
+          year: { gridX: 13, gridY: 12, format: "MMM" }
+        }
       };
 
   function svgGantt( element, objects, options ) {
@@ -20,98 +25,52 @@
 
     init: function() {
       var sg = this;
-      sg.setup();
-      sg.setTimePosition();
-      sg.drawGrid();
-      sg.drawLabels();
-      sg.dragInit();
-      sg.createElements();
-      sg.arrangeElements();
+
+      sg.createUI(); // Create the UI elements (labels, content, grid)
+      sg.drawGrid(); // Draw the grid background
+      sg.setTimePosition(); // Determine the current position in time
+      sg.drawLabels(); // Draw the date labels
+      sg.dragInit(); // Initialize the ability to drag
+      sg.createElements(); // Loop through the objects and create elements
+      sg.arrangeElements(); // Arrange those elements by start date
     },
 
-    setup: function() {
-      var sg = this,
-          options = sg.options;
+    createUI: function() {
+      var sg = this, options = sg.options,
+          $container = sg.container;
 
       // Clear the container
-      sg.container.html("").css({overflow: "hidden"});
+      $container.html("").css({overflow: "hidden"});
 
       // Create the label container
-      $('<div class="sg-labels"></div>').appendTo(sg.container);
-      sg.labels = sg.container.find(".sg-labels");
+      $('<div class="sg-labels"></div>').appendTo($container);
+      sg.labels = $container.find(".sg-labels");
 
       // Create the content element
-      $('<div class="sg-content"></div>').appendTo(sg.container);
-      sg.content = sg.container.find(".sg-content");
+      $('<div class="sg-content"></div>').appendTo($container);
+      sg.content = $container.find(".sg-content");
 
       // Create the canvas element for the grid
-      $('<canvas class="sg-grid"></canvas>').appendTo(sg.container).hide();
-      sg.grid = sg.container.find(".sg-grid");
-
-      // Create the data for each view type
-      sg.views = {
-        week: {
-          gridX: 150,
-          gridY: 12,
-          format: "MMM, DD"
-        },
-        month: {
-          gridX: 50,
-          gridY: 12,
-          format: "MMM, DD"
-        },
-        year: {
-          gridX: 13,
-          gridY: 12,
-          format: "MMM"
-        }
-      }
-    },
-
-    setTimePosition: function() {
-      var sg = this,
-          options = sg.options,
-          containerWidth = sg.container.width(),
-          gridWidth = containerWidth * 3,
-          gridX = sg.views[options.view].gridX,
-          contentOffset = -(Math.floor(containerWidth / gridX) * gridX);
-
-      today = options.startDate ? moment(options.startDate) : moment();
-
-      // Set up our time constraints
-      sg.startMoment = today.subtract("days", Math.floor(containerWidth / gridX));
-      sg.daysInGrid = gridWidth / gridX;
-
-      // Set the content to be within our time constraints
-      sg.content.css({
-        height: 500,
-        marginLeft: contentOffset,
-        position: "relative",
-        width: gridWidth
-      })
-
-      sg.labels.css({
-        left: contentOffset,
-        width: gridWidth
-      })
+      $('<canvas class="sg-grid"></canvas>').appendTo($container).hide();
+      sg.grid = $container.find(".sg-grid");
     },
 
     drawGrid: function() {
-       var sg = this,
-          options = this.options,
+      var sg = this, options = this.options,
           canvas = sg.grid[0],
           ctx = canvas.getContext("2d"),
-          view = sg.views[options.view],
-          scaleX = view.gridX,
-          scaleY = view.gridY;
+          view = options.views[options.view],
+          gridX = view.gridX,
+          gridY = view.gridY;
 
-      canvas.height = scaleY;
-      canvas.width = scaleX;
+      // Create a canvas that fits the rectangle
+      canvas.height = gridY;
+      canvas.width = gridX;
 
       // Draw the grid image
-      ctx.moveTo(scaleX - 0.5, -0.5);
-      ctx.lineTo(scaleX - 0.5, scaleY - 0.5);
-      ctx.lineTo(-0.5,scaleY - 0.5);
+      ctx.moveTo(gridX - 0.5, -0.5);
+      ctx.lineTo(gridX - 0.5, gridY - 0.5);
+      ctx.lineTo(-0.5,gridY - 0.5);
       ctx.strokeStyle = options.gridColor;
       ctx.stroke();
 
@@ -120,15 +79,52 @@
       sg.content.css({ background: "url("+data+")" });
     },
 
+    setTimePosition: function() {
+      var sg = this, options = sg.options,
+          view = options.views[options.view],
+          $container = sg.container,
+
+          // Show dates according to width of container
+          containerWidth = $container.width(),
+          gridWidth = containerWidth * 3,
+          gridX = view.gridX,
+          contentOffset = -(Math.floor(containerWidth / gridX) * gridX),
+
+          // Determine the current date
+          currentDate = options.currentDate,
+          today = currentDate ? moment(currentDate) : moment();
+
+      // Set up our time constraints
+      sg.startMoment = today.subtract("days", Math.floor(containerWidth / gridX));
+      sg.daysInGrid = gridWidth / gridX;
+
+      // Set the content to be within our time constraints
+      sg.content.css({
+        height: $container.height() * 3,
+        marginLeft: contentOffset,
+        position: "relative",
+        width: gridWidth
+      })
+
+      // Set the labels to be within our time constraints
+      sg.labels.css({
+        left: contentOffset,
+        width: gridWidth
+      })
+    },
+
     drawLabels: function() {
-      var sg = this,
-          options = sg.options,
+      var sg = this, options = sg.options,
+          view = options.views[options.view],
           daysInGrid = sg.daysInGrid,
-          gridX = sg.views[options.view].gridX;
+          gridX = view.gridX;
 
       for(var i=0;i<daysInGrid;i++) {
-        var label = moment(sg.startMoment).add("days", i).format(sg.views[options.view].format),
+        // Create the label
+        var label = moment(sg.startMoment).add("days", i).format(view.format),
             $label = $('<div class="sg-label"><div class="sg-'+options.view+'">'+label+'</div></div>');
+
+        // Append it and position
         sg.labels.append($label);
         $label.css({
           left: gridX * i,
@@ -141,63 +137,74 @@
     },
 
     dragInit: function() {
-      var sg = this,
-          options = sg.options,
+      var sg = this, options = sg.options,
           mouse = container = {x: 0, y: 0},
           dragging = false,
-          gridX = sg.views[options.view].gridX;
+          gridX = options.views[options.view].gridX,
+          $content = sg.content;
 
-      sg.content.off().on("mousedown mousemove mouseup", function(e) {
+      $content.off().on("mousedown mousemove mouseup", function(e) {
         if(e.type === "mousedown") {
+          // Turn on dragging and record the initial position
           dragging = true;
           mouse = {x: e.pageX, y: e.pageY}
-          container = {x: parseInt(sg.content.css("margin-left")), y: parseInt(sg.content.css("margin-top"))}
+          container = {
+            x: parseInt($content.css("margin-left")),
+            y: parseInt($content.css("margin-top"))
+          }
+
         } else if(e.type === "mousemove" && dragging) {
+          // Determine the new content position based on
+          // the mouse offset vs the original container position
           marginLeft = container.x + (e.pageX - mouse.x)
           marginTop = container.y + (e.pageY - mouse.y)
 
+          // Prevent from scrolling outside of the content
           if(marginLeft > 0) { marginLeft = 0; }
           if(marginTop > 0) { marginTop = 0; }
 
-          sg.content.css({
-            marginLeft: marginLeft,
-            marginTop: marginTop
-          })
-          sg.labels.css({
-            left: marginLeft
-          })
+          // Move the content
+          $content.css({ marginLeft: marginLeft, marginTop: marginTop })
+          sg.labels.css({ left: marginLeft })
+
         } else if(e.type === "mouseup") {
+          // Turn off dragging
           dragging = false;
 
-          curDayOffset = Math.round(parseInt(sg.content.css("margin-left")) / gridX);
+          // Find the currently selected day based on
+          // the offset of the content
+          curDayOffset = Math.round(parseInt($content.css("margin-left")) / gridX);
           curMoment = moment(sg.startMoment).subtract("days", curDayOffset);
-          options.startDate = curMoment;
+
+          // Set that day as the current moment
+          options.currentDate = curMoment;
           sg.init();
         }
       })
     },
 
     createElements: function() {
-      var sg = this,
-          options = sg.options,
-          gridX = sg.views[options.view].gridX,
-          gridY = sg.views[options.view].gridY;
+      var sg = this, options = sg.options,
+          view = options.views[options.view],
+          gridX = view.gridX;
 
       for(i=0;i<sg.objects.length;i++) {
         var object = sg.objects[i],
+            // Create the UI for the element
             $object = $('<div class="sg-object"></div>'),
             $img = $('<img class="sg-icon" src="'+object.iconURL+'" />').appendTo($object),
             $name = $('<div class="sg-name">'+object.name+'</div>').appendTo($object),
+            // Determine the object date
             startDate = moment(object.startDate),
             endDate = moment(object.endDate),
             daysBetween = endDate.diff(startDate, "days") + 1,
             daysSinceStart = startDate.diff(sg.startMoment, "days") + 1;
 
+        // Append the element to the content
         sg.content.append($object);
-
         $object.css({
           background: object.color,
-          height: gridY * options.objectScale,
+          height: view.gridY * options.objectScale,
           left: daysSinceStart * gridX,
           top: -30,
           width: daysBetween * gridX
@@ -206,35 +213,37 @@
     },
 
     arrangeElements: function(animated) {
-      var sg = this,
-          options = sg.options,
+      var sg = this, options = sg.options,
           $objects = sg.content.children(),
-          gridY = sg.views[options.view].gridY,
+          gridY = options.views[options.view].gridY,
           objectHeight = gridY * options.objectScale;
 
+      // Loop over each object
       for(i=0;i<sg.objects.length;i++) {
+        // Get the date data for the current object
         var selected = sg.objects[i],
             selectedStart = moment(selected.startDate).unix(),
             selectedEnd = moment(selected.endDate).unix(),
             $selected = $($objects[i]),
             row = 0;
 
+        // Loop over every object before this one
         for(j=0;j<i;j++) {
+          // Determine if this object is within the range of the
+          // currently selected one.
           var object = sg.objects[j],
               objectStart = moment(object.startDate).unix(),
               objectEnd = moment(object.endDate).unix(),
               startIsBetween = objectStart <= selectedStart <= objectEnd,
               endIsBetween = objectStart <= selectedEnd<= objectEnd;
+          // If it is, then we must move it down a row to compensate
           if(startIsBetween || endIsBetween) {
             row++;
           }
         }
 
-        attributes = {
-          top: gridY + (row * (objectHeight + gridY))
-        }
-
-
+        // Set the vertical offset
+        attributes = { top: gridY + (row * (objectHeight + gridY)) }
         if(animated) {
           $selected.animate(attributes)
         } else {

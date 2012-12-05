@@ -16,9 +16,12 @@
 .sg-content .sg-object .sg-icon {
   float: left;
   height: 100%;
-  margin-right: 10px;
+  margin-right: 8px;
 }
 
 .sg-content .sg-object .sg-name {
   float: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

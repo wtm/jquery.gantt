@@ -9,3 +9,12 @@ body {
   border: 1px solid black;
   height: 300px;
 }
+
+.container .sg-content .sg-object {
+  color: #FFF;
+  border-radius: 3px;
+}
+
+.container .sg-content .sg-object .sg-name {
+  padding-top: 5px;
+}
