@@ -198,7 +198,7 @@
             startDate = moment(object.startDate),
             endDate = moment(object.endDate),
             daysBetween = endDate.diff(startDate, "days") + 1,
-            daysSinceStart = startDate.diff(sg.startMoment, "days") + 1;
+            daysSinceStart = startDate.diff(sg.startMoment, "days");
 
         // Append the element to the content
         sg.content.append($object);
@@ -216,10 +216,11 @@
       var sg = this, options = sg.options,
           $objects = sg.content.children(),
           gridY = options.views[options.view].gridY,
-          objectHeight = gridY * options.objectScale;
+          objectHeight = gridY * options.objectScale,
+          objects = sg.objects;
 
       // Loop over each object
-      for(i=0;i<sg.objects.length;i++) {
+      for(var i=0;i<objects.length;i++) {
         // Get the date data for the current object
         var selected = sg.objects[i],
             selectedStart = moment(selected.startDate).unix(),
@@ -228,16 +229,19 @@
             row = 0;
 
         // Loop over every object before this one
-        for(j=0;j<i;j++) {
+        for(var j=0;j<i;j++) {
           // Determine if this object is within the range of the
           // currently selected one.
-          var object = sg.objects[j],
+          var object = objects[j],
               objectStart = moment(object.startDate).unix(),
               objectEnd = moment(object.endDate).unix(),
-              startIsBetween = objectStart <= selectedStart <= objectEnd,
-              endIsBetween = objectStart <= selectedEnd<= objectEnd;
+              betweenObjectStart = sg.isBetween(objectStart, selectedStart, objectEnd),
+              betweenObjectEnd = sg.isBetween(objectStart, selectedEnd, objectEnd),
+              betweenSelectedStart = sg.isBetween(selectedStart, objectStart, selectedEnd),
+              betweenSelectedEnd = sg.isBetween(selectedStart, objectEnd, selectedEnd);
+
           // If it is, then we must move it down a row to compensate
-          if(startIsBetween || endIsBetween) {
+          if(betweenObjectStart || betweenObjectEnd || betweenSelectedStart || betweenSelectedEnd) {
             row++;
           }
         }
@@ -250,6 +254,11 @@
           $selected.css(attributes)
         }
       }
+    },
+
+    // Helper functions
+    isBetween: function(first, middle, last) {
+      return (first < last ? middle >= first && middle <= last : middle >= last && middle <= first);
     }
 
   };
