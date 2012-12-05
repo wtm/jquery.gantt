@@ -219,6 +219,7 @@
             $object = $('<div class="sg-object"></div>'),
             $img = $('<img class="sg-icon" src="'+object.iconURL+'" />').appendTo($object),
             $name = $('<div class="sg-name">'+object.name+'</div>').appendTo($object),
+
             // Determine the object date
             startDate = moment(object.startDate),
             endDate = moment(object.endDate),
