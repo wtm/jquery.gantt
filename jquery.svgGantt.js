@@ -5,6 +5,7 @@
         gridColor: "#DDD",
         objectScale: 2,
         currentDate: null,
+        offsetY: 0,
         view: "month",
         views: {
           week: { gridX: 150, gridY: 12, format: "MMM, DD", labelEvery: "day" },
@@ -111,10 +112,12 @@
       sg.daysInGrid = gridWidth / gridX;
 
       // Set the content to be within our time constraints
+      console.log(options.offsetY)
       sg.content.css({
         height: $container.height() * 3,
         marginLeft: contentOffset,
         position: "relative",
+        marginTop: options.offsetY,
         width: gridWidth
       })
 
@@ -205,6 +208,7 @@
           if(curMoment.format("MM DD") != startMoment.format("MM DD")) {
             // Set that day as the current moment
             options.currentDate = curMoment;
+            options.offsetY = parseInt($content.css("margin-top"))
             sg.init();
           }
         }
