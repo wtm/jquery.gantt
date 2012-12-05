@@ -1,0 +1,27 @@
+.sg-labels {
+  background: #AAA;
+  height: 30px;
+  position: relative;
+  z-index: 3;
+}
+
+.sg-container .sg-labels div[class*='sg-'] {
+  margin: 0 auto;
+}
+
+.sg-content .sg-object {
+  position: absolute;
+}
+
+.sg-content .sg-object .sg-icon {
+  float: left;
+  height: 100%;
+  margin-right: 8px;
+}
+
+.sg-content .sg-object .sg-name {
+  float: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
