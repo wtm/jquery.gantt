@@ -2,7 +2,7 @@
   // Create the defaults once
   var pluginName = "svgGantt",
       defaults = {
-        startTime: null,
+        startDate: null,
         view: "week",
         gridColor: "#F0F0F0"
       };
@@ -30,6 +30,7 @@
           options = sg.options;
 
       // Create the SVG element
+      sg.container.html("");
       $('<div class="svgGantt"></div>').appendTo(sg.container);
       sg.content = sg.container.find(".svgGantt");
 
@@ -61,8 +62,11 @@
           gridWidth = containerWidth * 3,
           gridX = sg.views[options.view].gridX;
 
+      today = options.startDate ? moment(options.startDate) : moment();
+      today.subtract("days", 1);
+
       // Set up our time constraints
-      sg.startMoment = moment().subtract("days", (containerWidth / gridX));
+      sg.startMoment = today.subtract("days", (containerWidth / gridX));
       sg.daysInGrid = gridWidth / gridX;
 
       // Set the SVG to be within our time constraints
@@ -131,7 +135,7 @@
           dragging = false,
           gridX = sg.views[options.view].gridX;
 
-      sg.content.on("mousedown mousemove mouseup", function(e) {
+      sg.content.off().on("mousedown mousemove mouseup", function(e) {
         if(e.type === "mousedown") {
           dragging = true;
           mouse = {x: e.pageX, y: e.pageY}
@@ -152,6 +156,8 @@
 
           curDayOffset = parseInt(sg.content.css("margin-left")) / gridX;
           curMoment = moment(sg.startMoment).subtract("days", curDayOffset);
+          options.startDate = curMoment;
+          sg.init()
         }
       })
     }
