@@ -169,7 +169,7 @@
         } else if(e.type === "mouseup") {
           dragging = false;
 
-          curDayOffset = parseInt(sg.content.css("margin-left")) / gridX;
+          curDayOffset = Math.round(parseInt(sg.content.css("margin-left")) / gridX);
           curMoment = moment(sg.startMoment).subtract("days", curDayOffset);
           options.startDate = curMoment;
           sg.init();
