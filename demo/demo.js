@@ -28,5 +28,5 @@ $(document).ready(function() {
     endDate: "December 15, 2012",
     color: "red"
   }]
-  $(".sg-container").svgGantt(stories);
+  $(".container").svgGantt(stories);
 })

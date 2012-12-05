@@ -2,7 +2,7 @@
   // Create the defaults once
   var pluginName = "svgGantt",
       defaults = {
-        gridColor: "#F0F0F0",
+        gridColor: "#DDD",
         objectScale: 2,
         startDate: null,
         view: "week"
@@ -34,7 +34,7 @@
           options = sg.options;
 
       // Clear the container
-      sg.container.html("");
+      sg.container.html("").css({overflow: "hidden"});
 
       // Create the label container
       $('<div class="sg-labels"></div>').appendTo(sg.container);
@@ -52,17 +52,17 @@
       sg.views = {
         week: {
           gridX: 150,
-          gridY: 10,
+          gridY: 12,
           format: "MMM, DD"
         },
         month: {
           gridX: 50,
-          gridY: 10,
+          gridY: 12,
           format: "MMM, DD"
         },
         year: {
-          gridX: 10,
-          gridY: 10,
+          gridX: 13,
+          gridY: 12,
           format: "MMM"
         }
       }
