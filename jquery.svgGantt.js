@@ -210,13 +210,18 @@
             startDate = moment(object.startDate),
             endDate = moment(object.endDate),
             daysBetween = endDate.diff(startDate, "days") + 1,
-            daysSinceStart = startDate.diff(sg.startMoment, "days");
+            daysSinceStart = startDate.diff(sg.startMoment, "days"),
+            height = view.gridY * options.objectScale;
 
         // Append the element to the content
         sg.content.append($object);
+        $img.css({
+          height: height,
+          width: height
+        })
         $object.css({
           background: object.color,
-          height: view.gridY * options.objectScale,
+          height: height,
           left: daysSinceStart * gridX,
           top: -30,
           width: daysBetween * gridX
