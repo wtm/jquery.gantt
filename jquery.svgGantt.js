@@ -5,11 +5,11 @@
         gridColor: "#DDD",
         objectScale: 2,
         currentDate: null,
-        view: "week",
+        view: "month",
         views: {
-          week: { gridX: 150, gridY: 12, format: "MMM, DD" },
-          month: { gridX: 50, gridY: 12, format: "MMM, DD" },
-          year: { gridX: 13, gridY: 12, format: "MMM" }
+          week: { gridX: 150, gridY: 12, format: "MMM, DD", labelEvery: "day" },
+          month: { gridX: 42, gridY: 12, format: "MMM, DD", labelEvery: "day" },
+          year: { gridX: 13, gridY: 12, format: "MMM", labelEvery: "month" }
         }
       };
 
@@ -120,19 +120,31 @@
           gridX = view.gridX;
 
       for(var i=0;i<daysInGrid;i++) {
-        // Create the label
-        var label = moment(sg.startMoment).add("days", i).format(view.format),
-            $label = $('<div class="sg-label"><div class="sg-'+options.view+'">'+label+'</div></div>');
+        var curMoment = moment(sg.startMoment).add("days", i),
+            addLabel = false;
 
-        // Append it and position
-        sg.labels.append($label);
-        $label.css({
-          left: gridX * i,
-          position: "absolute",
-          textAlign: "center",
-          top: 5,
-          width: gridX
-        })
+        if(view.labelEvery === "month") {
+          if(curMoment.format("D") === "1") { addLabel = true; }
+        } else {
+          // Every day
+          addLabel = true;
+        }
+
+        if(addLabel) {
+          // Create the label
+          var label = curMoment.format(view.format),
+              $label = $('<div class="sg-label"><div class="sg-'+options.view+'">'+label+'</div></div>');
+
+          // Append it and position
+          sg.labels.append($label);
+          $label.css({
+            left: gridX * i,
+            position: "absolute",
+            textAlign: "center",
+            top: 5,
+            width: gridX
+          })
+        }
       }
     },
 

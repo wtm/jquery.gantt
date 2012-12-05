@@ -15,6 +15,15 @@ body {
   border-radius: 3px;
 }
 
+.container .sg-content .sg-object .sg-icon {
+  border-radius: 3px 0 0 3px;
+}
+
 .container .sg-content .sg-object .sg-name {
   padding-top: 5px;
+}
+
+.container .sg-labels .sg-month {
+  font-size: 9px;
+  padding-top: 4px;
 }
