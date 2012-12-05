@@ -63,7 +63,6 @@
       // Clear the container
       $container.off("gantt-changeView").on("gantt-changeView", function(e, view) {
         options.view = view;
-        console.log(view)
         sg.init();
       });
     },
@@ -166,7 +165,8 @@
           mouse = container = {x: 0, y: 0},
           dragging = false,
           gridX = options.views[options.view].gridX,
-          $content = sg.content;
+          $content = sg.content,
+          startMoment = curMoment = null;
 
       $content.off().on("mousedown mousemove mouseup", function(e) {
         if(e.type === "mousedown") {
@@ -177,7 +177,8 @@
             x: parseInt($content.css("margin-left")),
             y: parseInt($content.css("margin-top"))
           }
-
+          curDayOffset = Math.round(parseInt($content.css("margin-left")) / gridX);
+          startMoment = moment(sg.startMoment).subtract("days", curDayOffset);
         } else if(e.type === "mousemove" && dragging) {
           // Determine the new content position based on
           // the mouse offset vs the original container position
@@ -201,9 +202,11 @@
           curDayOffset = Math.round(parseInt($content.css("margin-left")) / gridX);
           curMoment = moment(sg.startMoment).subtract("days", curDayOffset);
 
-          // Set that day as the current moment
-          options.currentDate = curMoment;
-          sg.init();
+          if(curMoment.format("MM DD") != startMoment.format("MM DD")) {
+            // Set that day as the current moment
+            options.currentDate = curMoment;
+            sg.init();
+          }
         }
       })
     },
