@@ -3,6 +3,7 @@
   var pluginName = "svgGantt",
       defaults = {
         gridColor: "#F0F0F0",
+        objectScale: 2,
         startDate: null,
         view: "week"
       };
@@ -180,8 +181,7 @@
       var sg = this,
           options = sg.options,
           gridX = sg.views[options.view].gridX,
-          gridY = sg.views[options.view].gridY,
-          paddingX = gridY;
+          gridY = sg.views[options.view].gridY;
 
       for(i=0;i<sg.objects.length;i++) {
         var object = sg.objects[i],
@@ -197,19 +197,20 @@
 
         $object.css({
           background: object.color,
-          height: gridY * 2,
+          height: gridY * options.objectScale,
           left: daysSinceStart * gridX,
-          top: paddingX,
+          top: -30,
           width: daysBetween * gridX
         })
       }
     },
 
-    arrangeElements: function() {
+    arrangeElements: function(animated) {
       var sg = this,
           options = sg.options,
           $objects = sg.content.children(),
-          gridY = sg.views[options.view].gridY * 2;
+          gridY = sg.views[options.view].gridY,
+          objectHeight = gridY * options.objectScale;
 
       for(i=0;i<sg.objects.length;i++) {
         var selected = sg.objects[i],
@@ -221,14 +222,24 @@
         for(j=0;j<i;j++) {
           var object = sg.objects[j],
               objectStart = moment(object.startDate).unix(),
-              objectEnd = moment(object.endDate).unix();
-
-          row = i;
+              objectEnd = moment(object.endDate).unix(),
+              startIsBetween = objectStart <= selectedStart <= objectEnd,
+              endIsBetween = objectStart <= selectedEnd<= objectEnd;
+          if(startIsBetween || endIsBetween) {
+            row++;
+          }
         }
 
-        $selected.animate({
-          top: gridY * row
-        })
+        attributes = {
+          top: gridY + (row * (objectHeight + gridY))
+        }
+
+
+        if(animated) {
+          $selected.animate(attributes)
+        } else {
+          $selected.css(attributes)
+        }
       }
     }
 
