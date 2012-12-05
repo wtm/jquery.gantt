@@ -10,8 +10,6 @@
   function svgGantt( element, options ) {
     var sg = this;
     sg.container = $(element);
-    sg.svg = null;
-    sg.grid = null;
     sg.options = $.extend( {}, defaults, options );
     sg.init();
   }
@@ -21,17 +19,19 @@
     init: function() {
       var sg = this;
       sg.setup();
+      sg.setTimePosition();
       sg.drawGrid();
-      sg.setPosition();
+      sg.drawLabels();
       sg.dragInit();
     },
 
     setup: function() {
-      var sg = this;
+      var sg = this,
+          options = sg.options;
 
       // Create the SVG element
-      $('<svg class="svgGantt"></svg>').appendTo(sg.container);
-      sg.svg = sg.container.find(".svgGantt");
+      $('<div class="svgGantt"></div>').appendTo(sg.container);
+      sg.content = sg.container.find(".svgGantt");
 
       // Create the canvas element for the grid
       $('<canvas class="grid"></canvas>').appendTo(sg.container).hide();
@@ -54,17 +54,23 @@
       }
     },
 
-    setPosition: function() {
+    setTimePosition: function() {
       var sg = this,
           options = sg.options,
           containerWidth = sg.container.width(),
+          gridWidth = containerWidth * 3,
           gridX = sg.views[options.view].gridX;
 
-      sg.svg.css({
+      // Set up our time constraints
+      sg.startMoment = moment().subtract("days", (containerWidth / gridX));
+      sg.daysInGrid = gridWidth / gridX;
+
+      // Set the SVG to be within our time constraints
+      sg.content.css({
         height: 500,
         marginLeft: -(Math.round(containerWidth / gridX) * gridX),
         position: "relative",
-        width: containerWidth * 3
+        width: gridWidth
       })
     },
 
@@ -89,36 +95,63 @@
 
       // Create a repeated image from canvas
       data = canvas.toDataURL("image/jpg");
-      sg.svg.css({ background: "url("+data+")" });
+      sg.content.css({ background: "url("+data+")" });
+    },
+
+    drawLabels: function() {
+      var sg = this,
+          options = sg.options,
+          daysInGrid = sg.daysInGrid,
+          $labels = $('<div class="labels"></div>'),
+          gridX = sg.views[options.view].gridX;
+
+      sg.content.append($labels);
+      $labels.css({
+        width: "100%"
+      })
+
+      for(var i=0;i<daysInGrid;i++) {
+        var label = moment(sg.startMoment).add("days", i).format("MMM. DD"),
+            $label = $('<div class="label">'+label+'</div>');
+        $labels.append($label);
+        $label.css({
+          left: gridX * i,
+          position: "absolute",
+          textAlign: "center",
+          top: 5,
+          width: gridX
+        })
+      }
     },
 
     dragInit: function() {
       var sg = this,
           options = sg.options,
           mouse = container = {x: 0, y: 0},
-          dragging = false;
+          dragging = false,
+          gridX = sg.views[options.view].gridX;
 
-      sg.svg.on("mousedown mousemove mouseup", function(e) {
+      sg.content.on("mousedown mousemove mouseup", function(e) {
         if(e.type === "mousedown") {
           dragging = true;
           mouse = {x: e.pageX, y: e.pageY}
-          container = {x: parseInt(sg.svg.css("margin-left")), y: parseInt(sg.svg.css("margin-top"))}
+          container = {x: parseInt(sg.content.css("margin-left")), y: parseInt(sg.content.css("margin-top"))}
         } else if(e.type === "mousemove" && dragging) {
-          xDiff = -(e.pageX - mouse.x);
-          yDiff = -(e.pageY - mouse.y);
-
-          marginLeft = container.x - xDiff
-          marginTop = container.y - yDiff
+          marginLeft = container.x + (e.pageX - mouse.x)
+          marginTop = container.y + (e.pageY - mouse.y)
 
           if(marginLeft > 0) { marginLeft = 0; }
           if(marginTop > 0) { marginTop = 0; }
 
-          sg.svg.css({
+          sg.content.css({
             marginLeft: marginLeft,
             marginTop: marginTop
           })
         } else if(e.type === "mouseup") {
           dragging = false;
+
+          curDayOffset = parseInt(sg.content.css("margin-left")) / gridX;
+          curMoment = moment(sg.startMoment).subtract("days", curDayOffset);
         }
       })
     }
