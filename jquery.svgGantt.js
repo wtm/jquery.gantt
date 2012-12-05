@@ -25,6 +25,7 @@
       sg.drawLabels();
       sg.dragInit();
       sg.createElements();
+      sg.arrangeElements();
     },
 
     setup: function() {
@@ -181,7 +182,6 @@
           gridX = sg.views[options.view].gridX,
           gridY = sg.views[options.view].gridY,
           paddingX = gridY;
-      console.log(sg.labels.height())
 
       for(i=0;i<sg.objects.length;i++) {
         var object = sg.objects[i],
@@ -201,6 +201,33 @@
           left: daysSinceStart * gridX,
           top: paddingX,
           width: daysBetween * gridX
+        })
+      }
+    },
+
+    arrangeElements: function() {
+      var sg = this,
+          options = sg.options,
+          $objects = sg.content.children(),
+          gridY = sg.views[options.view].gridY * 2;
+
+      for(i=0;i<sg.objects.length;i++) {
+        var selected = sg.objects[i],
+            selectedStart = moment(selected.startDate).unix(),
+            selectedEnd = moment(selected.endDate).unix(),
+            $selected = $($objects[i]),
+            row = 0;
+
+        for(j=0;j<i;j++) {
+          var object = sg.objects[j],
+              objectStart = moment(object.startDate).unix(),
+              objectEnd = moment(object.endDate).unix();
+
+          row = i;
+        }
+
+        $selected.animate({
+          top: gridY * row
         })
       }
     }
