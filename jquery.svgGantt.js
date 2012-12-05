@@ -2,15 +2,16 @@
   // Create the defaults once
   var pluginName = "svgGantt",
       defaults = {
+        gridColor: "#F0F0F0",
         startDate: null,
-        view: "week",
-        gridColor: "#F0F0F0"
+        view: "week"
       };
 
-  function svgGantt( element, options ) {
+  function svgGantt( element, objects, options ) {
     var sg = this;
     sg.container = $(element);
     sg.options = $.extend( {}, defaults, options );
+    sg.objects = objects;
     sg.init();
   }
 
@@ -23,6 +24,7 @@
       sg.drawGrid();
       sg.drawLabels();
       sg.dragInit();
+      sg.createElements();
     },
 
     setup: function() {
@@ -33,30 +35,33 @@
       sg.container.html("");
 
       // Create the label container
-      $('<div class="labels"></div>').appendTo(sg.container);
-      sg.labels = sg.container.find(".labels");
+      $('<div class="sg-labels"></div>').appendTo(sg.container);
+      sg.labels = sg.container.find(".sg-labels");
 
       // Create the content element
-      $('<div class="content"></div>').appendTo(sg.container);
-      sg.content = sg.container.find(".content");
+      $('<div class="sg-content"></div>').appendTo(sg.container);
+      sg.content = sg.container.find(".sg-content");
 
       // Create the canvas element for the grid
-      $('<canvas class="grid"></canvas>').appendTo(sg.container).hide();
-      sg.grid = sg.container.find(".grid");
+      $('<canvas class="sg-grid"></canvas>').appendTo(sg.container).hide();
+      sg.grid = sg.container.find(".sg-grid");
 
       // Create the data for each view type
       sg.views = {
         week: {
           gridX: 150,
-          gridY: 10
+          gridY: 10,
+          format: "MMM, DD"
         },
         month: {
           gridX: 50,
-          gridY: 10
+          gridY: 10,
+          format: "MMM, DD"
         },
         year: {
           gridX: 10,
-          gridY: 10
+          gridY: 10,
+          format: "MMM"
         }
       }
     },
@@ -84,7 +89,8 @@
       })
 
       sg.labels.css({
-        left: contentOffset
+        left: contentOffset,
+        width: gridWidth
       })
     },
 
@@ -118,13 +124,9 @@
           daysInGrid = sg.daysInGrid,
           gridX = sg.views[options.view].gridX;
 
-      sg.labels.css({
-        width: "100%"
-      })
-
       for(var i=0;i<daysInGrid;i++) {
-        var label = moment(sg.startMoment).add("days", i).format("MMM. DD"),
-            $label = $('<div class="label">'+label+'</div>');
+        var label = moment(sg.startMoment).add("days", i).format(sg.views[options.view].format),
+            $label = $('<div class="sg-label"><div class="sg-'+options.view+'">'+label+'</div></div>');
         sg.labels.append($label);
         $label.css({
           left: gridX * i,
@@ -171,16 +173,46 @@
           sg.init();
         }
       })
+    },
+
+    createElements: function() {
+      var sg = this,
+          options = sg.options,
+          gridX = sg.views[options.view].gridX,
+          gridY = sg.views[options.view].gridY,
+          paddingX = gridY;
+      console.log(sg.labels.height())
+
+      for(i=0;i<sg.objects.length;i++) {
+        var object = sg.objects[i],
+            $object = $('<div class="sg-object"></div>'),
+            $img = $('<img class="sg-icon" src="'+object.iconURL+'" />').appendTo($object),
+            $name = $('<div class="sg-name">'+object.name+'</div>').appendTo($object),
+            startDate = moment(object.startDate),
+            endDate = moment(object.endDate),
+            daysBetween = endDate.diff(startDate, "days") + 1,
+            daysSinceStart = startDate.diff(sg.startMoment, "days") + 1;
+
+        sg.content.append($object);
+
+        $object.css({
+          background: object.color,
+          height: gridY * 2,
+          left: daysSinceStart * gridX,
+          top: paddingX,
+          width: daysBetween * gridX
+        })
+      }
     }
 
   };
 
   // A really lightweight plugin wrapper around the constructor,
   // preventing against multiple instantiations
-  $.fn[pluginName] = function ( options ) {
+  $.fn[pluginName] = function ( objects, options ) {
     return this.each(function () {
       if (!$.data(this, "plugin_" + pluginName)) {
-        $.data(this, "plugin_" + pluginName, new svgGantt( this, options ));
+        $.data(this, "plugin_" + pluginName, new svgGantt( this, objects, options ));
       }
     });
   };

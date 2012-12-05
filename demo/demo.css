@@ -1,15 +1,54 @@
 body {
+  font-family: Helvetica, Arial;
+  font-size: 13px;
   margin: 0px;
   padding: 0px;
 }
 
-.container {
+.sg-container {
   border: 1px solid black;
   height: 300px;
   overflow: hidden;
 }
 
-.container .labels {
+.sg-container .sg-labels {
+  background: #EFEFEF;
+  border-bottom: 1px solid #DDD;
+  height: 30px;
   position: relative;
+  text-align: center;
+  text-transform: uppercase;
   z-index: 9999;
+}
+
+.sg-container .sg-labels .sg-week {
+  background: #FFF;
+  border: 1px solid black;
+  border-radius: 2px;
+  margin: 0 auto;
+  width: 60px;
+}
+
+.sg-container .sg-labels .sg-year {
+  background: #FFF;
+  border: 1px solid black;
+  border-radius: 2px;
+  margin: 0 auto;
+  width: 60px;
+}
+
+.sg-container .sg-content .sg-object {
+  position: absolute;
+}
+
+.sg-container .sg-content .sg-object .sg-icon {
+  float: left;
+  height: 100%;
+  margin-right: 10px;
+}
+
+.sg-container .sg-content .sg-object .sg-name {
+  color: #FFF;
+  float: left;
+  padding-top: 3px;
 }
