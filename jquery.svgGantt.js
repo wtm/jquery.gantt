@@ -112,7 +112,6 @@
       sg.daysInGrid = gridWidth / gridX;
 
       // Set the content to be within our time constraints
-      console.log(options.offsetY)
       sg.content.css({
         height: $container.height() * 3,
         marginLeft: contentOffset,
