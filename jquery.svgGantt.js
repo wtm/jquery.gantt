@@ -7,7 +7,7 @@
         mode: "regular",
         modes: {
           regular: { scale: 2, paddingY: 1, showContent: true },
-          collapsed: { scale: 1, paddingY: 0, showContent: false }
+          collapsed: { scale: .3, paddingY: .2, showContent: false }
         },
         view: "month",
         views: {
