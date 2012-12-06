@@ -51,7 +51,11 @@
           object.endDate = moment(object.endDate).unix();
         }
       }
-      this.objects.sort(function(a,b) { return a.startDate - b.startDate } );
+      this.objects.sort(function(a,b) {
+        isBefore = a.startDate - b.startDate;
+        if(!isBefore) { isBefore = a.id - b.id }
+        return isBefore
+      });
     },
 
     createUI: function() {
