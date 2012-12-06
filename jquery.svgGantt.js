@@ -30,11 +30,11 @@
     init: function() {
       var sg = this, options = sg.options;
 
-      sg.sortObjects();
       sg.createUI(); // Create the UI elements (labels, content, grid)
       sg.createEvents(); // Create the UI elements (labels, content, grid)
       sg.drawGrid(); // Draw the grid background
       sg.setTimePosition(); // Determine the current position in time
+      sg.sortObjects();
       sg.drawLabels(); // Draw the date labels
       sg.dragInit(); // Initialize the ability to drag
       sg.createElements(); // Loop through the objects and create elements
@@ -248,7 +248,9 @@
       var sg = this, options = sg.options,
           view = options.views[options.view],
           gridX = view.gridX,
-          mode = options.modes[options.mode];
+          mode = options.modes[options.mode],
+          timelineStart = sg.startMoment.unix(),
+          timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix();
 
       for(i=0;i<sg.objects.length;i++) {
         var object = sg.objects[i],
@@ -266,27 +268,32 @@
             // Determine the object properties from the dates
             height = view.gridY * mode.scale,
             width = daysBetween * gridX,
-            left = daysSinceStart * gridX;
+            left = daysSinceStart * gridX,
 
-        // If the content is visible
-        if(mode.showContent) { $object.append($img).append($name); }
+            isBetweenStart = sg.isBetween(timelineStart,object.startDate,timelineEnd),
+            isBetweenEnd = sg.isBetween(timelineStart,object.endDate,timelineEnd);
 
-        // Append the element to the content
-        sg.content.append($object);
-        $img.css({
-          height: height,
-          width: height
-        })
-        $name.css({
-          width: width - $img.outerWidth(true)
-        })
-        $object.css({
-          background: object.color,
-          height: height,
-          left: left,
-          top: -30,
-          width: width
-        })
+        if(isBetweenStart || isBetweenEnd) {
+          // If the content is visible
+          if(mode.showContent) { $object.append($img).append($name); }
+
+          // Append the element to the content
+          sg.content.append($object);
+          $img.css({
+            height: height,
+            width: height
+          })
+          $name.css({
+            width: width - $img.outerWidth(true)
+          })
+          $object.css({
+            background: object.color,
+            height: height,
+            left: left,
+            top: -30,
+            width: width
+          })
+        }
       }
     },
 
