@@ -30,6 +30,7 @@
     init: function() {
       var sg = this, options = sg.options;
 
+      sg.sortObjects();
       sg.createUI(); // Create the UI elements (labels, content, grid)
       sg.createEvents(); // Create the UI elements (labels, content, grid)
       sg.drawGrid(); // Draw the grid background
@@ -38,6 +39,18 @@
       sg.dragInit(); // Initialize the ability to drag
       sg.createElements(); // Loop through the objects and create elements
       sg.arrangeElements(); // Arrange those elements by start date
+    },
+
+    sortObjects: function() {
+      var sg = this;
+
+      for(i=0;i<sg.objects.length;i++) {
+        object = sg.objects[i];
+        object.startDate = moment(object.startDate).unix();
+        object.endDate = moment(object.endDate).unix();
+      }
+      this.objects.sort(function(a,b) { return a.startDate - b.startDate } );
+      console.log(this.objects)
     },
 
     createUI: function() {
@@ -244,8 +257,8 @@
             $name = $('<div class="sg-name">'+object.name+'</div>'),
 
             // Determine the object date
-            startDate = moment(object.startDate),
-            endDate = moment(object.endDate),
+            startDate = moment.unix(object.startDate),
+            endDate = moment.unix(object.endDate),
             daysBetween = endDate.diff(startDate, "days") + 1,
             daysSinceStart = startDate.diff(sg.startMoment, "days"),
 
@@ -289,28 +302,41 @@
       for(var i=0;i<objects.length;i++) {
         // Get the date data for the current object
         var selected = sg.objects[i],
-            selectedStart = moment(selected.startDate).unix(),
-            selectedEnd = moment(selected.endDate).unix(),
+            selectedStart = selected.startDate,
+            selectedEnd = selected.endDate,
             $selected = $($objects[i]),
-            row = 0;
+            row = 0,
+            usedRows = [];
 
+        // TODO: Clean this up to prevent unecessary calculations
         // Loop over every object before this one
         for(var j=0;j<i;j++) {
           // Determine if this object is within the range of the
           // currently selected one.
           var object = objects[j],
-              objectStart = moment(object.startDate).unix(),
-              objectEnd = moment(object.endDate).unix(),
+              objectStart = object.startDate,
+              objectEnd = object.endDate,
               betweenObjectStart = sg.isBetween(objectStart, selectedStart, objectEnd),
               betweenObjectEnd = sg.isBetween(objectStart, selectedEnd, objectEnd),
               betweenSelectedStart = sg.isBetween(selectedStart, objectStart, selectedEnd),
               betweenSelectedEnd = sg.isBetween(selectedStart, objectEnd, selectedEnd);
 
+          if(!object.ganttRow) {object.ganttRow = 0}
           // If it is, then we must move it down a row to compensate
           if(betweenObjectStart || betweenObjectEnd || betweenSelectedStart || betweenSelectedEnd) {
+            usedRows.push(object.ganttRow)
+          }
+        }
+
+        usedRows.sort(function(a,b) { return a-b });
+        for(k=0;k<usedRows.length;k++) {
+          usedRow = usedRows[k];
+          if(row === usedRow) {
             row++;
           }
         }
+
+        selected.ganttRow = row;
 
         // Set the vertical offset
         attributes = { top: paddingY + (row * (objectHeight + paddingY)) }
