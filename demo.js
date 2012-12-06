@@ -45,6 +45,10 @@ $(document).ready(function() {
   $(".container").svgGantt(stories, {currentDate: "December 1, 2012"});
 
   $(".toolbelt a").on("click", function() {
-    $(".container").trigger("gantt-changeView", $(this).attr("class"));
+    if($(this).hasClass("view")) {
+      $(".container").trigger("gantt-changeView", $(this).attr("class").split(" ")[1]);
+    } else {
+      $(".container").trigger("gantt-collapse", $(this).attr("class"));
+    }
   })
 })
