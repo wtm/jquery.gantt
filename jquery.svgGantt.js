@@ -72,7 +72,11 @@
 
       // Change the current view
       $container.off("gantt-collapse").on("gantt-collapse", function() {
-        options.collapsed = !options.collapsed;
+        if(options.mode === "collapsed") {
+          options.mode = "default";
+        } else {
+          options.mode = "collapsed";
+        }
         sg.init();
       });
     },

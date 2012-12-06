@@ -46,7 +46,7 @@ $(document).ready(function() {
 
   $(".toolbelt a").on("click", function() {
     if($(this).hasClass("view")) {
-      $(".container").trigger("gantt-changeView", $(this).attr("class"));
+      $(".container").trigger("gantt-changeView", $(this).attr("class").split(" ")[1]);
     } else {
       $(".container").trigger("gantt-collapse", $(this).attr("class"));
     }
