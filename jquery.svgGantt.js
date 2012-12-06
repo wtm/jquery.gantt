@@ -126,7 +126,7 @@
 
       // Set the content to be within our time constraints
       sg.content.css({
-        height: $container.height() * 3,
+        height: $container.height() * 2,
         marginLeft: contentOffset,
         position: "relative",
         marginTop: options.grid.offsetY,
@@ -181,7 +181,8 @@
           dragging = false,
           gridX = options.views[options.view].gridX,
           $content = sg.content,
-          startMoment = curMoment = null;
+          startMoment = curMoment = null,
+          maxHeight = 0;
 
       $content.off().on("mousedown mousemove mouseup", function(e) {
         if(e.type === "mousedown") {
@@ -194,6 +195,7 @@
           }
           curDayOffset = Math.round(parseInt($content.css("margin-left")) / gridX);
           startMoment = moment(sg.startMoment).subtract("days", curDayOffset);
+          maxHeight = $content.height() / 2;
         } else if(e.type === "mousemove" && dragging) {
           // Determine the new content position based on
           // the mouse offset vs the original container position
@@ -203,6 +205,7 @@
           // Prevent from scrolling outside of the content
           if(marginLeft > 0) { marginLeft = 0; }
           if(marginTop > 0) { marginTop = 0; }
+          if(marginTop <= -(maxHeight)) { marginTop = -(maxHeight); }
 
           // Move the content
           $content.css({ marginLeft: marginLeft, marginTop: marginTop })
