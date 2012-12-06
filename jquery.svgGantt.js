@@ -6,8 +6,8 @@
         grid: { color: "#DDD", offsetY: 0 },
         mode: "regular",
         modes: {
-          regular: { scale: 2, paddingY: 1, showContent: true },
-          collapsed: { scale: .3, paddingY: .2, showContent: false }
+          regular: { scale: 2, paddingX: 1, paddingY: 1, showContent: true },
+          collapsed: { scale: .3, paddingX: 0, paddingY: .2, showContent: false }
         },
         view: "month",
         views: {
@@ -46,11 +46,12 @@
 
       for(i=0;i<sg.objects.length;i++) {
         object = sg.objects[i];
-        object.startDate = moment(object.startDate).unix();
-        object.endDate = moment(object.endDate).unix();
+        if(typeof object.startDate != "number") {
+          object.startDate = moment(object.startDate).unix();
+          object.endDate = moment(object.endDate).unix();
+        }
       }
       this.objects.sort(function(a,b) { return a.startDate - b.startDate } );
-      console.log(this.objects)
     },
 
     createUI: function() {
@@ -295,6 +296,7 @@
           $objects = sg.content.children(),
           gridY = options.views[options.view].gridY,
           paddingY = gridY * mode.paddingY,
+          paddingX = mode.paddingX * (24*60*60),
           objectHeight = gridY * mode.scale,
           objects = sg.objects;
 
@@ -314,8 +316,8 @@
           // Determine if this object is within the range of the
           // currently selected one.
           var object = objects[j],
-              objectStart = object.startDate,
-              objectEnd = object.endDate,
+              objectStart = object.startDate - paddingX,
+              objectEnd = object.endDate + paddingX,
               betweenObjectStart = sg.isBetween(objectStart, selectedStart, objectEnd),
               betweenObjectEnd = sg.isBetween(objectStart, selectedEnd, objectEnd),
               betweenSelectedStart = sg.isBetween(selectedStart, objectStart, selectedEnd),
