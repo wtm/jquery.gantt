@@ -2,10 +2,13 @@
   // Create the defaults once
   var pluginName = "svgGantt",
       defaults = {
-        gridColor: "#DDD",
-        objectScale: 2,
         currentDate: null,
-        offsetY: 0,
+        grid: { color: "#DDD", offsetY: 0 },
+        mode: "default",
+        modes: {
+          default: { scale: 2, paddingY: 1, showContent: true },
+          collapsed: { scale: 1, paddingY: 0, showContent: false }
+        },
         view: "month",
         views: {
           week: { gridX: 150, gridY: 12, format: "MMM, DD", labelEvery: "day" },
@@ -25,7 +28,7 @@
   svgGantt.prototype = {
 
     init: function() {
-      var sg = this;
+      var sg = this, options = sg.options;
 
       sg.createUI(); // Create the UI elements (labels, content, grid)
       sg.createEvents(); // Create the UI elements (labels, content, grid)
@@ -61,9 +64,15 @@
       var sg = this, options = sg.options,
           $container = sg.container;
 
-      // Clear the container
+      // Change the current view
       $container.off("gantt-changeView").on("gantt-changeView", function(e, view) {
         options.view = view;
+        sg.init();
+      });
+
+      // Change the current view
+      $container.off("gantt-collapse").on("gantt-collapse", function() {
+        options.collapsed = !options.collapsed;
         sg.init();
       });
     },
@@ -84,7 +93,7 @@
       ctx.moveTo(gridX - 0.5, -0.5);
       ctx.lineTo(gridX - 0.5, gridY - 0.5);
       ctx.lineTo(-0.5,gridY - 0.5);
-      ctx.strokeStyle = options.gridColor;
+      ctx.strokeStyle = options.grid.color;
       ctx.stroke();
 
       // Create a repeated image from canvas
@@ -116,7 +125,7 @@
         height: $container.height() * 3,
         marginLeft: contentOffset,
         position: "relative",
-        marginTop: options.offsetY,
+        marginTop: options.grid.offsetY,
         width: gridWidth
       })
 
@@ -205,9 +214,9 @@
           curMoment = moment(sg.startMoment).subtract("days", curDayOffset);
 
           if(curMoment.format("MM DD") != startMoment.format("MM DD")) {
-            // Set that day as the current moment
+            // Set the new day as the current moment
             options.currentDate = curMoment;
-            options.offsetY = parseInt($content.css("margin-top"))
+            options.grid.offsetY = parseInt($content.css("margin-top"))
             sg.init();
           }
         }
@@ -217,22 +226,29 @@
     createElements: function() {
       var sg = this, options = sg.options,
           view = options.views[options.view],
-          gridX = view.gridX;
+          gridX = view.gridX,
+          mode = options.modes[options.mode];
 
       for(i=0;i<sg.objects.length;i++) {
         var object = sg.objects[i],
             // Create the UI for the element
             $object = $('<div class="sg-object"></div>'),
-            $img = $('<img class="sg-icon" src="'+object.iconURL+'" />').appendTo($object),
-            $name = $('<div class="sg-name">'+object.name+'</div>').appendTo($object),
+            $img = $('<img class="sg-icon" src="'+object.iconURL+'" />'),
+            $name = $('<div class="sg-name">'+object.name+'</div>'),
 
             // Determine the object date
             startDate = moment(object.startDate),
             endDate = moment(object.endDate),
             daysBetween = endDate.diff(startDate, "days") + 1,
             daysSinceStart = startDate.diff(sg.startMoment, "days"),
-            height = view.gridY * options.objectScale,
-            width = daysBetween * gridX;
+
+            // Determine the object properties from the dates
+            height = view.gridY * mode.scale,
+            width = daysBetween * gridX,
+            left = daysSinceStart * gridX;
+
+        // If the content is visible
+        if(mode.showContent) { $object.append($img).append($name); }
 
         // Append the element to the content
         sg.content.append($object);
@@ -246,7 +262,7 @@
         $object.css({
           background: object.color,
           height: height,
-          left: daysSinceStart * gridX,
+          left: left,
           top: -30,
           width: width
         })
@@ -255,9 +271,11 @@
 
     arrangeElements: function(animated) {
       var sg = this, options = sg.options,
+          mode = options.modes[options.mode],
           $objects = sg.content.children(),
           gridY = options.views[options.view].gridY,
-          objectHeight = gridY * options.objectScale,
+          paddingY = gridY * mode.paddingY,
+          objectHeight = gridY * mode.scale,
           objects = sg.objects;
 
       // Loop over each object
@@ -288,7 +306,7 @@
         }
 
         // Set the vertical offset
-        attributes = { top: gridY + (row * (objectHeight + gridY)) }
+        attributes = { top: paddingY + (row * (objectHeight + paddingY)) }
         if(animated) {
           $selected.animate(attributes)
         } else {
