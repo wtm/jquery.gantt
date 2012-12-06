@@ -4,9 +4,9 @@
       defaults = {
         currentDate: null,
         grid: { color: "#DDD", offsetY: 0 },
-        mode: "default",
+        mode: "regular",
         modes: {
-          default: { scale: 2, paddingY: 1, showContent: true },
+          regular: { scale: 2, paddingY: 1, showContent: true },
           collapsed: { scale: 1, paddingY: 0, showContent: false }
         },
         view: "month",
@@ -73,7 +73,7 @@
       // Change the current view
       $container.off("gantt-collapse").on("gantt-collapse", function() {
         if(options.mode === "collapsed") {
-          options.mode = "default";
+          options.mode = "regular";
         } else {
           options.mode = "collapsed";
         }
