@@ -6,7 +6,7 @@
         grid: { color: "#DDD", offsetY: 0 },
         mode: "regular",
         modes: {
-          regular: { scale: 2, paddingX: 1, paddingY: 1, showContent: true },
+          regular: { scale: 2, paddingX: 2, paddingY: 1, showContent: true },
           collapsed: { scale: .3, paddingX: 0, paddingY: .2, showContent: false }
         },
         view: "month",
@@ -60,8 +60,8 @@
       });
       // Set the live objects to only be those that are in view
       sg.liveObjects = [];
-      var timelineStart = sg.startMoment.unix(),
-          timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix();
+      var timelineStart = sg.startMoment.unix() - (60 * 24*60*60),
+          timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix() + (60 * 24*60*60);
 
       for(i=0;i<sg.objects.length;i++) {
         var object = sg.objects[i],
@@ -325,8 +325,8 @@
       for(var i=0;i<objects.length;i++) {
         // Get the date data for the current object
         var selected = objects[i],
-            selectedStart = selected.startDate,
-            selectedEnd = selected.endDate,
+            selectedStart = selected.startDate - paddingX,
+            selectedEnd = selected.endDate + paddingX,
             $selected = $($objects[i]),
             row = 0,
             usedRows = [];

@@ -8,16 +8,19 @@ $(document).ready(function() {
     startYear = endYear = 2012;
     startMonth = Math.floor(Math.random()*12);
     startDay = Math.ceil(Math.random()*12);
-    endDay = Math.ceil(Math.random()*12) + startDay;
-    endMonth = startMonth + Math.floor(Math.random()*1);
+    endDay = Math.ceil(Math.random()*12) + 12;
+    endMonth = Math.floor(Math.random()*2) + startMonth;
+    if(endMonth > 11) {endMonth -= 12}
+    if(endMonth < startMonth) {endYear++}
     startDate = months[startMonth] + " " + startDay + ", " + startYear;
     endDate = months[endMonth] + " " + endDay + ", " + endYear;
+    console.log(endDate, endMonth)
 
     if(endMonth < startMonth) { endYear++ }
     story = {
       id: i,
       name: "DEMO ",
-      iconURL: "https://d3iqftjt1wcsda.cloudfront.net/uploads/5f33e0/21a941/0fb65b/preview/Screen_Shot_2012-12-03_at_3.38.39_PM_47945.png?1354577942",
+      iconURL: "nike-swoosh.gif",
       startDate: startDate,
       endDate: endDate,
       color: "blue"
