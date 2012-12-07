@@ -11,9 +11,9 @@
         },
         view: "month",
         views: {
-          week: { gridX: 150, gridY: 12, format: "MMM, DD", labelEvery: "day" },
-          month: { gridX: 42, gridY: 12, format: "MMM, DD", labelEvery: "day" },
-          year: { gridX: 13, gridY: 12, format: "MMM", labelEvery: "month" }
+          week: { gridX: 150, gridY: 10, format: "MMM, DD", labelEvery: "day" },
+          month: { gridX: 42, gridY: 10, format: "MMM, DD", labelEvery: "day" },
+          year: { gridX: 13, gridY: 10, format: "MMM", labelEvery: "month" }
         }
       };
 
@@ -60,8 +60,9 @@
       });
       // Set the live objects to only be those that are in view
       sg.liveObjects = [];
-      var timelineStart = sg.startMoment.unix() - (60 * 24*60*60),
-          timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix() + (60 * 24*60*60);
+      var timelinePadding = (120 * 24*60*60),
+          timelineStart = sg.startMoment.unix() - timelinePadding,
+          timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix() + timelinePadding;
 
       for(i=0;i<sg.objects.length;i++) {
         var object = sg.objects[i],

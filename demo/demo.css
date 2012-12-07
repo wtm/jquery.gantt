@@ -7,12 +7,13 @@ body {
 
 .container {
   border: 1px solid black;
-  height: 300px;
+  height: 500px;
 }
 
 .container .sg-content .sg-object {
-  color: #FFF;
+  border: 1px solid #333;
   border-radius: 3px;
+  color: #FFF;
 }
 
 .container .sg-content .sg-object .sg-icon {
@@ -20,7 +21,7 @@ body {
 }
 
 .container .sg-content .sg-object .sg-name {
-  padding-top: 5px;
+  padding-top: 3px;
 }
 
 .container .sg-labels .sg-month {
