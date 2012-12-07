@@ -7,7 +7,7 @@
         mode: "regular",
         modes: {
           regular: { scale: 2, paddingX: 2, paddingY: 1, showContent: true },
-          collapsed: { scale: .3, paddingX: 0, paddingY: .2, showContent: false }
+          collapsed: { scale: .3, paddingX: 0, paddingY: .3, showContent: false }
         },
         view: "month",
         views: {
@@ -276,8 +276,10 @@
         var object = objects[i],
             // Create the UI for the element
             $object = $('<div class="sg-object"></div>'),
+            $data = $('<div class="sg-data"></div>'),
             $img = $('<img class="sg-icon" src="'+object.iconURL+'" />'),
             $name = $('<div class="sg-name">'+object.name+'</div>'),
+            $moments = $('<div class="sg-moments"></div>'),
 
             // Determine the object date
             startDate = moment.unix(object.startDate),
@@ -290,8 +292,21 @@
             width = daysBetween * gridX,
             left = daysSinceStart * gridX;
 
+        for(j=0;j<object.moments.length;j++) {
+          themoment = object.moments[j];
+          $moment = $('<div class="sg-moment"></div>');
+          $moments.append($moment);
+          $moment.css({
+            left: moment(startDate).diff(themoment.date, "days") * gridX
+          })
+        }
+
         // If the content is visible
-        if(mode.showContent) { $object.append($img).append($name); }
+        $object.append($data);
+        if(mode.showContent) {
+          $data.append($img).append($name);
+          $object.append($moments)
+        }
 
         // Append the element to the content
         sg.content.append($object);
@@ -303,11 +318,23 @@
           width: width - $img.outerWidth(true)
         })
         $object.css({
-          background: object.color,
           height: height,
           left: left,
           top: -30,
           width: width
+        })
+        $data.css({
+          background: object.color,
+          height: height,
+          width: width
+        })
+
+        $object.on("mouseenter mouseleave", function(e) {
+          if(e.type === "mouseenter") {
+            $(this).find(".sg-moments").stop(true, false).animate({bottom: -15}, 100)
+          } else if(e.type === "mouseleave") {
+            $(this).find(".sg-moments").stop(true, false).animate({bottom: 0}, 100)
+          }
         })
       }
     },
@@ -361,7 +388,10 @@
         selected.ganttRow = row;
 
         // Set the vertical offset
-        attributes = { top: paddingY + (row * (objectHeight + paddingY)) }
+        attributes = {
+          top: paddingY + (row * (objectHeight + paddingY)),
+          zIndex: 5000 - (row * 10)
+        }
         if(animated) {
           $selected.animate(attributes)
         } else {

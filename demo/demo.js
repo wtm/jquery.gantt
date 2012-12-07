@@ -18,13 +18,25 @@ $(document).ready(function() {
     endDate = months[endMonth] + " " + endDay + ", " + endYear;
 
     if(endMonth < startMonth) { endYear++ }
+    moments = [];
+    days = moment(startDate).diff(moment(endDate), "days");
+
+    momentCount = Math.floor(Math.random() * 30)
+    for(j=0;j<momentCount;j++) {
+      amoment = {
+        date: moment(startDate).add("days", Math.floor(Math.random() * days)).format("MMMM D, YYYY")
+      }
+      moments.push(amoment)
+    }
+
     story = {
       id: i,
       name: "DEMO ",
       iconURL: "nike-swoosh.gif",
       startDate: startDate,
       endDate: endDate,
-      color: colors[Math.floor(Math.random()*7)]
+      color: colors[Math.floor(Math.random()*7)],
+      moments: moments
     }
     stories.push(story);
   }
