@@ -11,9 +11,9 @@
         },
         view: "month",
         views: {
-          week: { gridX: 150, gridY: 10, format: "MMM, DD", labelEvery: "day" },
-          month: { gridX: 42, gridY: 10, format: "MMM, DD", labelEvery: "day" },
-          year: { gridX: 13, gridY: 10, format: "MMM", labelEvery: "month" }
+          week: { gridX: 150, gridY: 10, format: "MMM, DD", labelEvery: "day", timelinePadding: 60 },
+          month: { gridX: 42, gridY: 10, format: "MMM, DD", labelEvery: "day", timelinePadding: 60 },
+          year: { gridX: 13, gridY: 10, format: "MMM", labelEvery: "month", timelinePadding: 60 }
         }
       };
 
@@ -28,44 +28,81 @@
   svgGantt.prototype = {
 
     init: function() {
-      var sg = this, options = sg.options;
-
-      sg.createUI(); // Create the UI elements (labels, content, grid)
-      sg.createEvents(); // Create the UI elements (labels, content, grid)
-      sg.drawGrid(); // Draw the grid background
-      sg.setTimePosition(); // Determine the current position in time
-      sg.sortObjects(); // Get the currently visible objects and sort them
-      sg.drawLabels(); // Draw the date labels
-      sg.dragInit(); // Initialize the ability to drag
-      sg.createElements(); // Loop through the objects and create elements
-      sg.arrangeElements(); // Arrange those elements by start date
-    },
-
-    sortObjects: function() {
       var sg = this;
 
-      // Set their dates to unix
-      for(i=0;i<sg.objects.length;i++) {
-        object = sg.objects[i];
-        if(typeof object.startDate != "number") {
+      // Handle Data
+      sg.parseObjects(); // Modify initial object data
+      sg.setTimeframe(); // Determine where in time we are
+      sg.orderObjects(); // Only get the objects in the current timeframe
+
+      // Physical Application
+      sg.createUI(); // Create the UI elements (labels, content, grid)
+      sg.drawGrid(); // Draw the grid background
+      sg.setPosition(); // Determine the current position in time
+      sg.drawLabels(); // Draw the date labels
+      sg.createElements(); // Loop through the objects and create elements
+      sg.arrangeElements(); // Arrange those elements by start date
+
+      // Interactions
+      sg.dragInit(); // Initialize the ability to drag
+      sg.createEvents(); // Create the UI elements (labels, content, grid)
+    },
+
+    parseObjects: function() {
+      var sg = this,
+          objects = sg.objects;
+
+      // Go over each object and modify the data.
+      for(i=0;i<objects.length;i++) {
+        var object = objects[i];
+
+        // Convert to Unix time.
+        if(isNaN(object.startDate)) {
           object.startDate = moment(object.startDate).unix();
           object.endDate = moment(object.endDate).unix();
         }
       }
-      // Sort them by their start time
-      sg.objects.sort(function(a,b) {
+
+      // Sort them by their start time / ID
+      objects.sort(function(a,b) {
         isBefore = a.startDate - b.startDate;
         if(!isBefore) { isBefore = a.id - b.id }
         return isBefore
       });
+    },
+
+    setTimeframe: function() {
+      var sg = this, options = sg.options,
+          $container = sg.container,
+          currentDate = options.currentDate,
+
+          // The timeframe is calculated by the width of the container
+          containerWidth = $container.width(),
+          gridWidth = containerWidth * 3,
+          gridX = options.views[options.view].gridX;
+
+
+      // Set up our time constraints
+      sg.curMoment = currentDate ? moment(currentDate) : moment();
+      sg.daysInGrid = Math.floor(gridWidth / gridX);
+      sg.startMoment = moment(sg.curMoment).subtract("days", Math.floor(containerWidth / gridX));
+      sg.endMoment = moment(sg.startMoment).add("days", sg.daysInGrid);
+    },
+
+    orderObjects: function() {
+      var sg = this, options = sg.options,
+          view = options.views[options.view],
+          objects = sg.objects;
+
       // Set the live objects to only be those that are in view
       sg.liveObjects = [];
-      var timelinePadding = (120 * 24*60*60),
+      var timelinePadding = (view.timelinePadding * 24*60*60),
           timelineStart = sg.startMoment.unix() - timelinePadding,
           timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix() + timelinePadding;
 
-      for(i=0;i<sg.objects.length;i++) {
-        var object = sg.objects[i],
+      // Determine if the object falls in between the current time frame
+      for(i=0;i<objects.length;i++) {
+        var object = objects[i],
             isBetweenStart = sg.isBetween(timelineStart,object.startDate,timelineEnd),
             isBetweenEnd = sg.isBetween(timelineStart,object.endDate,timelineEnd);
         if(isBetweenStart || isBetweenEnd) {
@@ -83,15 +120,15 @@
       $container.html("").css({overflow: "hidden"});
 
       // Create the label container
-      $('<div class="sg-labels"></div>').appendTo($container);
+      $('<div>').addClass("sg-labels").appendTo($container);
       sg.labels = $container.find(".sg-labels");
 
       // Create the content element
-      $('<div class="sg-content"></div>').appendTo($container);
+      $('<div>').addClass("sg-content").appendTo($container);
       sg.content = $container.find(".sg-content");
 
       // Create the canvas element for the grid
-      $('<canvas class="sg-grid"></canvas>').appendTo($container).hide();
+      $('<canvas>').addClass("sg-grid").appendTo($container).hide();
       sg.grid = $container.find(".sg-grid");
     },
 
@@ -140,24 +177,14 @@
       sg.content.css({ background: "url("+data+")" });
     },
 
-    setTimePosition: function() {
+    setPosition: function() {
       var sg = this, options = sg.options,
-          view = options.views[options.view],
           $container = sg.container,
-
-          // Show dates according to width of container
           containerWidth = $container.width(),
-          gridWidth = containerWidth * 3,
+          view = options.views[options.view],
           gridX = view.gridX,
-          contentOffset = -(Math.floor(containerWidth / gridX) * gridX),
-
-          // Determine the current date
-          currentDate = options.currentDate,
-          today = currentDate ? moment(currentDate) : moment();
-
-      // Set up our time constraints
-      sg.startMoment = today.subtract("days", Math.floor(containerWidth / gridX));
-      sg.daysInGrid = gridWidth / gridX;
+          gridWidth = containerWidth * 3,
+          contentOffset = -(Math.floor(containerWidth / gridX) * gridX);
 
       // Set the content to be within our time constraints
       sg.content.css({

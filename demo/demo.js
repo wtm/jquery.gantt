@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  var storyCount = 100,
+  var storyCount = 1000,
       stories = [],
       colors = ["blue", "red", "yellow", "green", "brown", "purple", "pink", "orange"],
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
