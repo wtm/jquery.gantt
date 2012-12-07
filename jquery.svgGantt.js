@@ -68,6 +68,7 @@
             isBetweenStart = sg.isBetween(timelineStart,object.startDate,timelineEnd),
             isBetweenEnd = sg.isBetween(timelineStart,object.endDate,timelineEnd);
         if(isBetweenStart || isBetweenEnd) {
+          object.ganttRow = 0;
           sg.liveObjects.push(object);
         }
       }
@@ -336,17 +337,16 @@
           // Determine if this object is within the range of the
           // currently selected one.
           var object = objects[j],
-              objectStart = object.startDate - paddingX,
-              objectEnd = object.endDate + paddingX,
+              objectStart = object.startDate,
+              objectEnd = object.endDate,
               betweenObjectStart = sg.isBetween(objectStart, selectedStart, objectEnd),
               betweenObjectEnd = sg.isBetween(objectStart, selectedEnd, objectEnd),
               betweenSelectedStart = sg.isBetween(selectedStart, objectStart, selectedEnd),
               betweenSelectedEnd = sg.isBetween(selectedStart, objectEnd, selectedEnd);
 
-          if(!object.ganttRow) {object.ganttRow = 0}
           // If it is, then we must move it down a row to compensate
           if(betweenObjectStart || betweenObjectEnd || betweenSelectedStart || betweenSelectedEnd) {
-            usedRows.push(object.ganttRow)
+            usedRows.push(object.ganttRow);
           }
         }
 
@@ -357,7 +357,6 @@
             row++;
           }
         }
-
         selected.ganttRow = row;
 
         // Set the vertical offset
@@ -372,7 +371,7 @@
 
     // Helper functions
     isBetween: function(first, middle, last) {
-      return (first < last ? middle >= first && middle <= last : middle >= last && middle <= first);
+      return (first <= middle && middle <= last);
     }
 
   };
