@@ -34,7 +34,7 @@
       sg.createEvents(); // Create the UI elements (labels, content, grid)
       sg.drawGrid(); // Draw the grid background
       sg.setTimePosition(); // Determine the current position in time
-      sg.sortObjects();
+      sg.sortObjects(); // Get the currently visible objects and sort them
       sg.drawLabels(); // Draw the date labels
       sg.dragInit(); // Initialize the ability to drag
       sg.createElements(); // Loop through the objects and create elements
@@ -44,6 +44,7 @@
     sortObjects: function() {
       var sg = this;
 
+      // Set their dates to unix
       for(i=0;i<sg.objects.length;i++) {
         object = sg.objects[i];
         if(typeof object.startDate != "number") {
@@ -51,11 +52,25 @@
           object.endDate = moment(object.endDate).unix();
         }
       }
-      this.objects.sort(function(a,b) {
+      // Sort them by their start time
+      sg.objects.sort(function(a,b) {
         isBefore = a.startDate - b.startDate;
         if(!isBefore) { isBefore = a.id - b.id }
         return isBefore
       });
+      // Set the live objects to only be those that are in view
+      sg.liveObjects = [];
+      var timelineStart = sg.startMoment.unix(),
+          timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix();
+
+      for(i=0;i<sg.objects.length;i++) {
+        var object = sg.objects[i],
+            isBetweenStart = sg.isBetween(timelineStart,object.startDate,timelineEnd),
+            isBetweenEnd = sg.isBetween(timelineStart,object.endDate,timelineEnd);
+        if(isBetweenStart || isBetweenEnd) {
+          sg.liveObjects.push(object);
+        }
+      }
     },
 
     createUI: function() {
@@ -253,11 +268,10 @@
           view = options.views[options.view],
           gridX = view.gridX,
           mode = options.modes[options.mode],
-          timelineStart = sg.startMoment.unix(),
-          timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix();
+          objects = sg.liveObjects;
 
-      for(i=0;i<sg.objects.length;i++) {
-        var object = sg.objects[i],
+      for(i=0;i<objects.length;i++) {
+        var object = objects[i],
             // Create the UI for the element
             $object = $('<div class="sg-object"></div>'),
             $img = $('<img class="sg-icon" src="'+object.iconURL+'" />'),
@@ -272,32 +286,27 @@
             // Determine the object properties from the dates
             height = view.gridY * mode.scale,
             width = daysBetween * gridX,
-            left = daysSinceStart * gridX,
+            left = daysSinceStart * gridX;
 
-            isBetweenStart = sg.isBetween(timelineStart,object.startDate,timelineEnd),
-            isBetweenEnd = sg.isBetween(timelineStart,object.endDate,timelineEnd);
+        // If the content is visible
+        if(mode.showContent) { $object.append($img).append($name); }
 
-        if(isBetweenStart || isBetweenEnd) {
-          // If the content is visible
-          if(mode.showContent) { $object.append($img).append($name); }
-
-          // Append the element to the content
-          sg.content.append($object);
-          $img.css({
-            height: height,
-            width: height
-          })
-          $name.css({
-            width: width - $img.outerWidth(true)
-          })
-          $object.css({
-            background: object.color,
-            height: height,
-            left: left,
-            top: -30,
-            width: width
-          })
-        }
+        // Append the element to the content
+        sg.content.append($object);
+        $img.css({
+          height: height,
+          width: height
+        })
+        $name.css({
+          width: width - $img.outerWidth(true)
+        })
+        $object.css({
+          background: object.color,
+          height: height,
+          left: left,
+          top: -30,
+          width: width
+        })
       }
     },
 
@@ -309,12 +318,12 @@
           paddingY = gridY * mode.paddingY,
           paddingX = mode.paddingX * (24*60*60),
           objectHeight = gridY * mode.scale,
-          objects = sg.objects;
+          objects = sg.liveObjects;
 
       // Loop over each object
       for(var i=0;i<objects.length;i++) {
         // Get the date data for the current object
-        var selected = sg.objects[i],
+        var selected = objects[i],
             selectedStart = selected.startDate,
             selectedEnd = selected.endDate,
             $selected = $($objects[i]),
