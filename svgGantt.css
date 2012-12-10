@@ -46,7 +46,7 @@
 
 }
 
-.sg-content .sg-project .sg-moments {
+.sg-content .sg-project .sg-tasks {
   background: black;
   bottom: 0px;
   height: 80%;
@@ -55,7 +55,7 @@
   z-index: -10;
 }
 
-.sg-content .sg-project .sg-moments .sg-moment {
+.sg-content .sg-project .sg-tasks .sg-tasks {
   background: #FFF;
   border-radius: 10px;
   height: 5px;

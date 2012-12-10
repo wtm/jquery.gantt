@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  var storyCount = 800,
+  var storyCount = 200,
       stories = [],
       colors = ["blue", "red", "yellow", "green", "brown", "purple", "pink", "orange"],
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -18,15 +18,15 @@ $(document).ready(function() {
     endDate = months[endMonth] + " " + endDay + ", " + endYear;
 
     if(endMonth < startMonth) { endYear++ }
-    moments = [];
+    tasks = [];
     days = moment(startDate).diff(moment(endDate), "days");
 
-    momentCount = Math.floor(Math.random() * 30)
-    for(j=0;j<momentCount;j++) {
-      amoment = {
+    taskCount = Math.floor(Math.random() * 30)
+    for(j=0;j<taskCount;j++) {
+      task = {
         date: moment(startDate).add("days", Math.floor(Math.random() * days)).format("MMMM D, YYYY")
       }
-      moments.push(amoment)
+      tasks.push(task)
     }
 
     story = {
@@ -36,7 +36,7 @@ $(document).ready(function() {
       startDate: startDate,
       endDate: endDate,
       color: colors[Math.floor(Math.random()*7)],
-      moments: moments
+      tasks: tasks
     }
     stories.push(story);
   }

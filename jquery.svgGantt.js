@@ -281,17 +281,17 @@
                       'width: '+(width - el_height - 8)+'px;">'+
                       project.name + "</div>";
 
-          // The moments
-          elements[el_i++] = '<div class="sg-moments">';
+          // The tasks
+          elements[el_i++] = '<div class="sg-tasks">';
 
-          for(j=0;j<project.moments.length;j++) {
-            var objMoment = project.moments[j],
+          for(j=0;j<project.tasks.length;j++) {
+            var objMoment = project.tasks[j],
                 left = moment(startDate).diff(objMoment.date, "days") * gridX;
-            elements[el_i++] = '<div class="sg-moment" style="'+
+            elements[el_i++] = '<div class="sg-task" style="'+
                         'left: '+left+'px;"></div>'
           }
 
-          elements[el_i++] = '</div></div>'; // Close sg-moments
+          elements[el_i++] = '</div></div>'; // Close sg-tasks
         } else {
           elements[el_i++] = "</div>"; // Close sg-data
         }
