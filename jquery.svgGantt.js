@@ -11,9 +11,9 @@
         },
         view: "month",
         views: {
-          week: { gridX: 150, gridY: 10, format: "MMM, DD", labelEvery: "day", timelinePadding: 600 },
-          month: { gridX: 42, gridY: 10, format: "MMM, DD", labelEvery: "day", timelinePadding: 600 },
-          year: { gridX: 13, gridY: 10, format: "MMM", labelEvery: "month", timelinePadding: 600 }
+          week: { gridX: 150, gridY: 10, format: "MMM, DD", labelEvery: "day", timelinePadding: 150 },
+          month: { gridX: 42, gridY: 10, format: "MMM, DD", labelEvery: "day", timelinePadding: 150 },
+          year: { gridX: 13, gridY: 10, format: "MMM", labelEvery: "month", timelinePadding: 150 }
         }
       };
 
@@ -364,8 +364,9 @@
     dragInit: function() {
       var sg = this, options = sg.options,
           mouse = container = {x: 0, y: 0},
-          dragging = false,
+          dragging = draggingX = draggingY = false,
           gridX = options.views[options.view].gridX,
+          lockPadding = 8,
           $content = sg.content,
           startMoment = curMoment = null,
           maxHeight = 0;
@@ -383,23 +384,32 @@
           startMoment = moment(sg.startMoment).subtract("days", curDayOffset);
           maxHeight = $content.height() / 2;
         } else if(e.type === "mousemove" && dragging) {
-          // Determine the new content position based on
-          // the mouse offset vs the original container position
-          marginLeft = container.x + (e.pageX - mouse.x)
-          marginTop = container.y + (e.pageY - mouse.y)
+          var marginLeft = marginTop = 0,
+              offsetX = e.pageX - mouse.x,
+              offsetY = e.pageY - mouse.y;
 
-          // Prevent from scrolling outside of the content
-          if(marginLeft > 0) { marginLeft = 0; }
-          if(marginTop > 0) { marginTop = 0; }
-          if(marginTop <= -(maxHeight)) { marginTop = -(maxHeight); }
-
-          // Move the content
-          $content.css({ marginLeft: marginLeft, marginTop: marginTop })
-          sg.labels.css({ left: marginLeft })
+          // Lock the drag to an axis
+          if(!draggingX && !draggingY) {
+            if(Math.abs(offsetX) > lockPadding) {
+              draggingX = true;
+            } else if(Math.abs(offsetY) > lockPadding) {
+              draggingY = true;
+            }
+          } else {
+            // Move the content
+            if(draggingX) {
+              marginLeft = container.x + offsetX;
+              $content.css({ marginLeft: marginLeft });
+              sg.labels.css({ left: marginLeft });
+            } else {
+              marginTop = container.y + offsetY;
+              $content.css({ marginTop: marginTop });
+            }
+          }
 
         } else if(e.type === "mouseup") {
           // Turn off dragging
-          dragging = false;
+          dragging = draggingX = draggingY = false;
 
           // Find the currently selected day based on
           // the offset of the content
