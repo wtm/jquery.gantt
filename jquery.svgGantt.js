@@ -2,18 +2,23 @@
   // Create the defaults once
   var pluginName = "svgGantt",
       defaults = {
-        currentDate: null,
-        grid: { color: "#DDD", offsetY: 0 },
         mode: "regular",
         modes: {
           regular: { scale: 2, paddingX: 2, paddingY: 1, showContent: true },
           collapsed: { scale: .3, paddingX: 0, paddingY: .3, showContent: false }
         },
+        position: { date: null, top: 0 },
         view: "month",
         views: {
-          week: { gridX: 150, gridY: 10, format: "MMM, DD", labelEvery: "day", timelinePadding: 150 },
-          month: { gridX: 42, gridY: 10, format: "MMM, DD", labelEvery: "day", timelinePadding: 150 },
-          year: { gridX: 13, gridY: 10, format: "MMM", labelEvery: "month", timelinePadding: 150 }
+          week: {
+            grid: { color: "#DDD", x: 150, y: 10 },
+            format: "MMM, DD", labelEvery: "day", preloadDays: 150 },
+          month: {
+            grid: { color: "#DDD", x: 42, y: 10 },
+            format: "MMM, DD", labelEvery: "day", preloadDays: 150 },
+          year: {
+            grid: { color: "#DDD", x: 13, y: 10 },
+            format: "MMM", labelEvery: "month", preloadDays: 150 }
         }
       };
 
@@ -109,16 +114,16 @@
     setTimeframe: function() {
       var sg = this, options = sg.options,
           $container = sg.container,
-          currentDate = options.currentDate,
+          date = options.position.date,
 
           // The timeframe is calculated by the width of the container
           containerWidth = $container.width(),
           gridWidth = containerWidth * 3,
-          gridX = options.views[options.view].gridX;
+          gridX = options.views[options.view].grid.x;
 
 
       // Set up our time constraints
-      sg.curMoment = currentDate ? moment(currentDate) : moment();
+      sg.curMoment = date ? moment(date) : moment();
       sg.daysInGrid = Math.floor(gridWidth / gridX);
       sg.startMoment = moment(sg.curMoment).subtract("days", Math.floor(containerWidth / gridX));
       sg.endMoment = moment(sg.startMoment).add("days", sg.daysInGrid);
@@ -131,9 +136,9 @@
 
       // Set the live projects to only be those that are in view
       sg.activeProjects = [];
-      var timelinePadding = (view.timelinePadding * 24*60*60),
-          timelineStart = sg.startMoment.unix() - timelinePadding,
-          timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix() + timelinePadding;
+      var preloadDays = (view.preloadDays * 24*60*60),
+          timelineStart = sg.startMoment.unix() - preloadDays,
+          timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix() + preloadDays;
 
       // Determine if the project falls in between the current time frame
       for(i=0;i<projects.length;i++) {
@@ -152,8 +157,8 @@
           canvas = sg.grid[0],
           ctx = canvas.getContext("2d"),
           view = options.views[options.view],
-          gridX = view.gridX,
-          gridY = view.gridY;
+          gridX = view.grid.x,
+          gridY = view.grid.y;
 
       // Create a canvas that fits the rectangle
       canvas.height = gridY;
@@ -163,7 +168,7 @@
       ctx.moveTo(gridX - 0.5, -0.5);
       ctx.lineTo(gridX - 0.5, gridY - 0.5);
       ctx.lineTo(-0.5,gridY - 0.5);
-      ctx.strokeStyle = options.grid.color;
+      ctx.strokeStyle = view.grid.color;
       ctx.stroke();
 
       // Create a repeated image from canvas
@@ -176,7 +181,7 @@
           $container = sg.container,
           containerWidth = $container.width(),
           view = options.views[options.view],
-          gridX = view.gridX,
+          gridX = view.grid.x,
           gridWidth = containerWidth * 3,
           contentOffset = -(Math.floor(containerWidth / gridX) * gridX);
 
@@ -185,7 +190,7 @@
         height: $container.height() * 2,
         marginLeft: contentOffset,
         position: "relative",
-        marginTop: options.grid.offsetY,
+        marginTop: options.position.top,
         width: gridWidth
       })
 
@@ -200,7 +205,7 @@
       var sg = this, options = sg.options,
           view = options.views[options.view],
           daysInGrid = sg.daysInGrid,
-          gridX = view.gridX;
+          gridX = view.grid.x;
 
       sg.labels.html("")
 
@@ -237,11 +242,11 @@
       var sg = this, options = sg.options,
           mode = options.modes[options.mode],
           view = options.views[options.view],
-          gridX = view.gridX,
+          gridX = view.grid.x,
           projects = sg.activeProjects,
           elements = []
           el_i = 0,
-          el_height = view.gridY * mode.scale - 1;
+          el_height = view.grid.y * mode.scale - 1;
 
       for(i=0;i<projects.length;i++) {
         var project = projects[i],
@@ -304,7 +309,7 @@
       var sg = this, options = sg.options,
           mode = options.modes[options.mode],
           $projects = sg.content.children(),
-          gridY = options.views[options.view].gridY,
+          gridY = options.views[options.view].grid.y,
           paddingY = gridY * mode.paddingY,
           paddingX = mode.paddingX * (24*60*60),
           projectHeight = gridY * mode.scale,
@@ -364,7 +369,7 @@
     dragInit: function() {
       var sg = this, options = sg.options,
           $content = sg.content,
-          gridX = options.views[options.view].gridX,
+          gridX = options.views[options.view].grid.x,
           mouse = container = {x: 0, y: 0},
           dragging = draggingX = draggingY = false,
           startMoment = curMoment = null,
@@ -414,8 +419,8 @@
 
           if(curMoment.format("MM DD") != startMoment.format("MM DD")) {
             // Set the new day as the current moment
-            options.currentDate = curMoment;
-            options.grid.offsetY = parseInt($content.css("margin-top"));
+            options.position.date = curMoment;
+            options.position.top = parseInt($content.css("margin-top"));
             sg.render();
           }
         }
