@@ -64,11 +64,11 @@
 
     parseProjects: function() {
       var sg = this,
-          projects = sg.projects;
+          projects = sg.projects,
+          project = null;
 
-      // Go over each project and modify the data.
       for(i=0;i<projects.length;i++) {
-        var project = projects[i];
+        project = projects[i];
 
         // Convert to Unix time.
         if(isNaN(project.startDate)) {
@@ -79,28 +79,25 @@
 
       // Sort them by their start time / ID
       projects.sort(function(a,b) {
-        isBefore = a.startDate - b.startDate;
-        if(!isBefore) { isBefore = a.id - b.id }
-        return isBefore
+        return a.startDate - b.startDate;
       });
     },
 
     createUI: function() {
-      var sg = this, options = sg.options,
-          $container = sg.container;
+      var sg = this,
+          $container = sg.container,
+          elements = '';
 
-      $container.css({overflow: "hidden"});
+      elements = '<div class="sg-labels"></div>' +
+                  '<div class="sg-content"></div>' +
+                  '<canvas class="sg-grid" style="display: none;"></canvas>';
 
-      // Create the label container
-      $('<div>').addClass("sg-labels").appendTo($container);
+      // Append the elements
+      $container.css({overflow: "hidden"}).append(elements);
+
+      // Create jQuery elements
       sg.labels = $container.find(".sg-labels");
-
-      // Create the content element
-      $('<div>').addClass("sg-content").appendTo($container);
       sg.content = $container.find(".sg-content");
-
-      // Create the canvas element for the grid
-      $('<canvas>').addClass("sg-grid").appendTo($container).hide();
       sg.grid = $container.find(".sg-grid");
     },
 
