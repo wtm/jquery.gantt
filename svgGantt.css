@@ -15,7 +15,13 @@
   user-select: none;
 }
 
-.sg-content .sg-labels div[class*='sg-'] {
+.sg-labels .sg-label {
+  position: absolute;
+  text-align: center;
+  top: 5px;
+}
+
+.sg-labels div[class*='sg-'] {
   margin: 0 auto;
 }
 

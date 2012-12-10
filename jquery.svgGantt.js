@@ -200,7 +200,8 @@
     drawLabels: function() {
       var sg = this, options = sg.options,
           view = options.views[options.view],
-          gridX = view.grid.x;
+          gridX = view.grid.x,
+          labels = [];
 
       for(var i=0;i<sg.daysInGrid;i++) {
         var curMoment = moment(sg.startMoment).add("days", i),
@@ -215,20 +216,16 @@
 
         if(addLabel) {
           // Create the label
-          var label = curMoment.format(view.format),
-              $label = $('<div class="sg-label"><div class="sg-'+options.view+'">'+label+'</div></div>');
+          var name = curMoment.format(view.format),
+              label = '<div class="sg-label" style="'+
+                      'left:'+(gridX * i)+'px;'+
+                      'width:'+gridX+'px;">'+
+                      '<div class="sg-'+options.view+'">'+name+'</div></div>';
 
-          // Append it and position
-          sg.labels.append($label);
-          $label.css({
-            left: gridX * i,
-            position: "absolute",
-            textAlign: "center",
-            top: 5,
-            width: gridX
-          })
+          labels.push(label);
         }
       }
+      sg.labels.append(labels.join(''));
     },
 
     createElements: function() {
