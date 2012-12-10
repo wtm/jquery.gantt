@@ -241,7 +241,7 @@
           projects = sg.activeProjects,
           elements = []
           el_i = 0,
-          el_height = view.gridY * mode.scale;
+          el_height = view.gridY * mode.scale - 1;
 
       for(i=0;i<projects.length;i++) {
         var project = projects[i],
@@ -253,7 +253,7 @@
             daysSinceStart = startDate.diff(sg.startMoment, "days"),
 
             // Element Attributes
-            width = daysBetween * gridX,
+            width = daysBetween * gridX - 2,
             left = daysSinceStart * gridX;
 
         // Physical project element
@@ -350,7 +350,7 @@
 
         // Set the vertical offset
         attributes = {
-          top: paddingY + (row * (projectHeight + paddingY)),
+          top: paddingY + (row * (projectHeight + paddingY)) - 1,
           zIndex: 5000 - (row * 10)
         }
         if(animated) {
@@ -363,13 +363,12 @@
 
     dragInit: function() {
       var sg = this, options = sg.options,
+          $content = sg.content,
+          gridX = options.views[options.view].gridX,
           mouse = container = {x: 0, y: 0},
           dragging = draggingX = draggingY = false,
-          gridX = options.views[options.view].gridX,
-          lockPadding = 8,
-          $content = sg.content,
           startMoment = curMoment = null,
-          maxHeight = 0;
+          lockPadding = 8;
 
       $content.off().on("mousedown mousemove mouseup", function(e) {
         if(e.type === "mousedown") {
@@ -380,29 +379,26 @@
             x: parseInt($content.css("margin-left")),
             y: parseInt($content.css("margin-top"))
           }
+          // Calculate dates
           curDayOffset = Math.round(parseInt($content.css("margin-left")) / gridX);
           startMoment = moment(sg.startMoment).subtract("days", curDayOffset);
-          maxHeight = $content.height() / 2;
         } else if(e.type === "mousemove" && dragging) {
-          var marginLeft = marginTop = 0,
-              offsetX = e.pageX - mouse.x,
-              offsetY = e.pageY - mouse.y;
-
           // Lock the drag to an axis
           if(!draggingX && !draggingY) {
-            if(Math.abs(offsetX) > lockPadding) {
+            if(Math.abs(e.pageX - mouse.x) > lockPadding) {
               draggingX = true;
-            } else if(Math.abs(offsetY) > lockPadding) {
+            } else if(Math.abs(e.pageY - mouse.y) > lockPadding) {
               draggingY = true;
             }
           } else {
-            // Move the content
+            // Move the content within restrictions
             if(draggingX) {
-              marginLeft = container.x + offsetX;
+              var marginLeft = container.x + (e.pageX - mouse.x);
               $content.css({ marginLeft: marginLeft });
               sg.labels.css({ left: marginLeft });
             } else {
-              marginTop = container.y + offsetY;
+              var marginTop = container.y + (e.pageY - mouse.y);
+              if(marginTop > 0) { marginTop = 0; }
               $content.css({ marginTop: marginTop });
             }
           }
