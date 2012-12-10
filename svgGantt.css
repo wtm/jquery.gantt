@@ -19,26 +19,26 @@
   margin: 0 auto;
 }
 
-.sg-content .sg-object {
+.sg-content .sg-project {
   position: absolute;
   z-index: 5;
 }
 
-.sg-content .sg-object .sg-moments {
+.sg-content .sg-project .sg-moments {
   z-index: 10;
 }
 
-.sg-content .sg-object .sg-data {
+.sg-content .sg-project .sg-data {
   z-index: 10;
 }
 
-.sg-content .sg-object .sg-icon {
+.sg-content .sg-project .sg-icon {
   float: left;
   height: 100%;
   margin-right: 8px;
 }
 
-.sg-content .sg-object .sg-name {
+.sg-content .sg-project .sg-name {
   float: left;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -46,7 +46,7 @@
 
 }
 
-.sg-content .sg-object .sg-moments {
+.sg-content .sg-project .sg-moments {
   background: black;
   bottom: 0px;
   height: 80%;
@@ -55,7 +55,7 @@
   z-index: -10;
 }
 
-.sg-content .sg-object .sg-moments .sg-moment {
+.sg-content .sg-project .sg-moments .sg-moment {
   background: #FFF;
   border-radius: 10px;
   height: 5px;
