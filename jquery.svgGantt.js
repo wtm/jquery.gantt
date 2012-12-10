@@ -118,8 +118,7 @@
           gridWidth = containerWidth * 3,
           gridX = options.views[options.view].grid.x;
 
-
-      // Set up our time constraints
+      // Set up our time variables / constraints
       sg.curMoment = date ? moment(date) : moment();
       sg.daysInGrid = Math.floor(gridWidth / gridX);
       sg.startMoment = moment(sg.curMoment).subtract("days", Math.floor(containerWidth / gridX));
@@ -132,11 +131,12 @@
           projects = sg.projects;
 
       // Set the live projects to only be those that are in view
-      sg.activeProjects = [];
       var preloadDays = (view.preloadDays * 24*60*60),
           timelineStart = sg.startMoment.unix() - preloadDays,
           timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix() + preloadDays;
 
+      // Clear the current active projects
+      sg.activeProjects = [];
       // Determine if the project falls in between the current time frame
       for(i=0;i<projects.length;i++) {
         var project = projects[i],
@@ -177,8 +177,7 @@
       var sg = this, options = sg.options,
           $container = sg.container,
           containerWidth = $container.width(),
-          view = options.views[options.view],
-          gridX = view.grid.x,
+          gridX = options.views[options.view].grid.x,
           gridWidth = containerWidth * 3,
           contentOffset = -(Math.floor(containerWidth / gridX) * gridX);
 
@@ -201,12 +200,9 @@
     drawLabels: function() {
       var sg = this, options = sg.options,
           view = options.views[options.view],
-          daysInGrid = sg.daysInGrid,
           gridX = view.grid.x;
 
-      sg.labels.html("")
-
-      for(var i=0;i<daysInGrid;i++) {
+      for(var i=0;i<sg.daysInGrid;i++) {
         var curMoment = moment(sg.startMoment).add("days", i),
             addLabel = false;
 
@@ -242,7 +238,6 @@
           gridX = view.grid.x,
           projects = sg.activeProjects,
           elements = []
-          el_i = 0,
           el_height = view.grid.y * mode.scale - 1;
 
       for(i=0;i<projects.length;i++) {
@@ -259,46 +254,47 @@
             left = daysSinceStart * gridX;
 
         // Physical project element
-        elements[el_i++] = '<div class="sg-project" style="'+
+        elements.push('<div class="sg-project" style="'+
                   'height:'+el_height+'px;'+
                   'left:'+left+'px;'+
                   'top: -30px;'+
-                  'width:'+width+'px;">';
+                  'width:'+width+'px;">');
 
-        elements[el_i++] = '<div class="sg-data" style="'+
+        elements.push('<div class="sg-data" style="'+
                     'background:'+project.color+';'+
                     'height:'+el_height+'px;'+
-                    'width:'+width+'px;">';
+                    'width:'+width+'px;">');
 
         // If the project content is visible
         if(mode.showContent) {
           // The image icon
-          elements[el_i++] = '<img class="sg-icon" '+
+          elements.push('<img class="sg-icon" '+
                       'src="'+project.iconURL+'" style="'+
                       'height: '+el_height+';'+
-                      'width: '+el_height+';" />';
+                      'width: '+el_height+';" />');
 
           // The name
-          elements[el_i++] = '<div class="sg-name" style="'+
+          elements.push('<div class="sg-name" style="'+
                       'width: '+(width - el_height - 8)+'px;">'+
-                      project.name + "</div>";
+                      project.name + "</div>");
 
           // The tasks
-          elements[el_i++] = '<div class="sg-tasks">';
+          elements.push('<div class="sg-tasks">');
 
           for(j=0;j<project.tasks.length;j++) {
             var objMoment = project.tasks[j],
                 left = moment(startDate).diff(objMoment.date, "days") * gridX;
-            elements[el_i++] = '<div class="sg-task" style="'+
-                        'left: '+left+'px;"></div>'
+            elements.push('<div class="sg-task" style="left:'+left+'px;"></div>')
           }
 
-          elements[el_i++] = '</div></div>'; // Close sg-tasks
+          elements.push('</div></div>'); // Close sg-tasks
         } else {
-          elements[el_i++] = "</div>"; // Close sg-data
+          elements.push("</div>"); // Close sg-data
         }
-        elements[el_i++] = "</div>"; // Close sg-project
+        elements.push("</div>"); // Close sg-project
       }
+
+      // Append the elements
       sg.content.append(elements.join(''));
     },
 
