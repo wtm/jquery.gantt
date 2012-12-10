@@ -254,50 +254,48 @@
 
             // Element Attributes
             width = daysBetween * gridX,
-            left = daysSinceStart * gridX,
+            left = daysSinceStart * gridX;
 
-            // Physical object element
-            element = '<div class="sg-object" style="'+
-                      'height:'+el_height+'px;'+
-                      'left:'+left+'px;'+
-                      'top: -30px;'+
-                      'width:'+width+'px;">';
+        // Physical object element
+        elements[el_i++] = '<div class="sg-object" style="'+
+                  'height:'+el_height+'px;'+
+                  'left:'+left+'px;'+
+                  'top: -30px;'+
+                  'width:'+width+'px;">';
 
-            element += '<div class="sg-data" style="'+
-                        'background:'+object.color+';'+
-                        'height:'+el_height+'px;'+
-                        'width:'+width+'px;">';
+        elements[el_i++] = '<div class="sg-data" style="'+
+                    'background:'+object.color+';'+
+                    'height:'+el_height+'px;'+
+                    'width:'+width+'px;">';
 
-            // If the object content is visible
-            if(mode.showContent) {
-              // The image icon
-              element += '<img class="sg-icon" '+
-                          'src="'+object.iconURL+'" style="'+
-                          'height: '+el_height+';'+
-                          'width: '+el_height+';" />';
+        // If the object content is visible
+        if(mode.showContent) {
+          // The image icon
+          elements[el_i++] = '<img class="sg-icon" '+
+                      'src="'+object.iconURL+'" style="'+
+                      'height: '+el_height+';'+
+                      'width: '+el_height+';" />';
 
-              // The name
-              element += '<div class="sg-name" style="'+
-                          'width: '+(width - el_height - 8)+'px;">'+
-                          object.name + "</div>";
+          // The name
+          elements[el_i++] = '<div class="sg-name" style="'+
+                      'width: '+(width - el_height - 8)+'px;">'+
+                      object.name + "</div>";
 
-              // The moments
-              element += '<div class="sg-moments">';
+          // The moments
+          elements[el_i++] = '<div class="sg-moments">';
 
-              for(j=0;j<object.moments.length;j++) {
-                var objMoment = object.moments[j],
-                    left = moment(startDate).diff(objMoment.date, "days") * gridX;
-                element += '<div class="sg-moment" style="'+
-                            'left: '+left+'px;"></div>'
-              }
+          for(j=0;j<object.moments.length;j++) {
+            var objMoment = object.moments[j],
+                left = moment(startDate).diff(objMoment.date, "days") * gridX;
+            elements[el_i++] = '<div class="sg-moment" style="'+
+                        'left: '+left+'px;"></div>'
+          }
 
-              element += '</div></div>'; // Close sg-moments
-            } else {
-              element += "</div>"; // Close sg-data
-            }
-            element += "</div>"; // Close sg-object
-
-        elements[el_i++] = element;
+          elements[el_i++] = '</div></div>'; // Close sg-moments
+        } else {
+          elements[el_i++] = "</div>"; // Close sg-data
+        }
+        elements[el_i++] = "</div>"; // Close sg-object
       }
       sg.content.append(elements.join(''));
     },
