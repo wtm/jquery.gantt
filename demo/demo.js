@@ -6,7 +6,7 @@ $(document).ready(function() {
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   for(i=0;i<storyCount;i++) {
-    startYear = endYear = 2012;
+    startYear = endYear = Math.floor(Math.random()*5) + 2009;
     startMonth = Math.floor(Math.random()*12);
     startDay = Math.ceil(Math.random()*28);
     endDay = Math.ceil(Math.random()*28);
