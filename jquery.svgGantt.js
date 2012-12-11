@@ -451,6 +451,14 @@
         }
         sg.render();
       });
+
+      $(".sg-project").off().on("mouseenter mouseleave", function(e) {
+        if(e.type === "mouseenter") {
+          $(this).find(".sg-tasks").animate({ top: 20 }, 100);
+        } else {
+          $(this).find(".sg-tasks").animate({ top: 0 }, 100);
+        }
+      })
     },
 
     // Helper functions

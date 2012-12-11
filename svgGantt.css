@@ -61,11 +61,11 @@
   z-index: -10;
 }
 
-.sg-content .sg-project .sg-tasks .sg-tasks {
+.sg-content .sg-project .sg-tasks .sg-task {
   background: #FFF;
   border-radius: 10px;
   height: 5px;
   position: absolute;
-  top: 6px;
+  top: 5px;
   width: 5px;
 }
