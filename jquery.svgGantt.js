@@ -303,7 +303,8 @@
           paddingY = gridY * mode.paddingY,
           paddingX = mode.paddingX * (24*60*60),
           projectHeight = gridY * mode.scale,
-          projects = sg.activeProjects;
+          projects = sg.activeProjects,
+          maxRow = 0;
 
       // Loop over each project
       for(var i=0;i<projects.length;i++) {
@@ -341,6 +342,8 @@
             row++;
           }
         }
+
+        if(row > maxRow) {maxRow = row;}
         selected.ganttRow = row;
 
         // Set the vertical offset
@@ -354,6 +357,12 @@
           $selected.css(attributes)
         }
       }
+
+      // Set the content height
+      maxRow++;
+      sg.content.css({
+        height: (maxRow * gridY) + (maxRow * projectHeight) + gridY
+      })
     },
 
     dragInit: function() {
@@ -363,6 +372,7 @@
           mouse = container = {x: 0, y: 0},
           dragging = draggingX = draggingY = false,
           startMoment = curMoment = null,
+          containerHeight = contentHeight = null,
           lockPadding = 8;
 
       $content.off().on("mousedown mousemove mouseup", function(e) {
@@ -375,8 +385,10 @@
             y: parseInt($content.css("margin-top"))
           }
           // Calculate dates
-          curDayOffset = Math.round(parseInt($content.css("margin-left")) / gridX);
+          var curDayOffset = Math.round(parseInt($content.css("margin-left")) / gridX);
           startMoment = moment(sg.startMoment).subtract("days", curDayOffset);
+          contentHeight = $content.height();
+          containerHeight = sg.container.outerHeight();
         } else if(e.type === "mousemove" && dragging) {
           // Lock the drag to an axis
           if(!draggingX && !draggingY) {
@@ -392,8 +404,11 @@
               $content.css({ marginLeft: marginLeft });
               sg.labels.css({ left: marginLeft });
             } else {
-              var marginTop = container.y + (e.pageY - mouse.y);
+              var marginTop = container.y + (e.pageY - mouse.y),
+                  maxMargin = -(contentHeight - containerHeight);
+
               if(marginTop > 0) { marginTop = 0; }
+              if(marginTop < maxMargin) { marginTop = maxMargin; }
               $content.css({ marginTop: marginTop });
             }
           }
@@ -404,7 +419,7 @@
 
           // Find the currently selected day based on
           // the offset of the content
-          curDayOffset = Math.round(parseInt($content.css("margin-left")) / gridX);
+          var curDayOffset = Math.round(parseInt($content.css("margin-left")) / gridX);
           curMoment = moment(sg.startMoment).subtract("days", curDayOffset);
 
           if(curMoment.format("MM DD") != startMoment.format("MM DD")) {
