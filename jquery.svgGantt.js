@@ -12,13 +12,13 @@
         views: {
           week: {
             grid: { color: "#DDD", x: 150, y: 10 },
-            format: "MMM, DD", labelEvery: "day", preloadDays: 350, currentOffset: 1 },
+            format: "MMM, DD", labelEvery: "day", preloadDays: 350, currentOffset: 1, highlightDays: 10 },
           month: {
             grid: { color: "#DDD", x: 42, y: 10 },
-            format: "MMM, DD", labelEvery: "day", preloadDays: 250, currentOffset: 3 },
+            format: "MMM, DD", labelEvery: "day", preloadDays: 250, currentOffset: 3, highlightDays: 10 },
           year: {
             grid: { color: "#DDD", x: 13, y: 10 },
-            format: "MMM", labelEvery: "month", preloadDays: 200, currentOffset: 5 }
+            format: "MMM", labelEvery: "month", preloadDays: 200, currentOffset: 5, highlightDays: 10 }
         }
       };
 
@@ -204,7 +204,7 @@
           containerWidth = sg.containerWidth,
           gridWidth = containerWidth * 3,
           contentOffset = -(Math.floor(containerWidth / gridX) * gridX) + (view.currentOffset * gridX),
-          playheadOffset = view.currentOffset * gridX - Math.floor(sg.playhead.width() / 2);
+          playheadOffset = view.currentOffset * gridX;
 
       // Move the timeline to the current date
       sg.timeline.css({
@@ -213,7 +213,8 @@
       })
 
       sg.playhead.css({
-        left: playheadOffset
+        left: playheadOffset,
+        width: (view.highlightDays * gridX)
       })
     },
 
