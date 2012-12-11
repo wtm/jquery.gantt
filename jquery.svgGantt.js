@@ -12,13 +12,13 @@
         views: {
           week: {
             grid: { color: "#DDD", x: 150, y: 10 },
-            format: "MMM, DD", labelEvery: "day", preloadDays: 150 },
+            format: "MMM, DD", labelEvery: "day", preloadDays: 350 },
           month: {
             grid: { color: "#DDD", x: 42, y: 10 },
-            format: "MMM, DD", labelEvery: "day", preloadDays: 150 },
+            format: "MMM, DD", labelEvery: "day", preloadDays: 250 },
           year: {
             grid: { color: "#DDD", x: 13, y: 10 },
-            format: "MMM", labelEvery: "month", preloadDays: 150 }
+            format: "MMM", labelEvery: "month", preloadDays: 200 }
         }
       };
 
@@ -46,6 +46,7 @@
 
       console.time("render time")
       sg.clearUI(); // Clear any data from last render
+      sg.setGlobals(); // Global variables that get calculated a lot
       sg.setTimeframe(); // Determine where in time we are
       sg.setActiveProjects(); // Only get the projects in the current timeframe
 
@@ -115,6 +116,14 @@
       sg.labels.html("");
     },
 
+    setGlobals: function() {
+      var sg = this,
+          $container = sg.container;
+
+      sg.containerWidth = $container.width();
+      sg.viewportHeight = $container.height() - sg.labels.height();
+    },
+
     setTimeframe: function() {
       // Static
       var sg = this, options = sg.options,
@@ -122,7 +131,7 @@
           date = options.position.date,
 
           // Calculated
-          containerWidth = $container.width(),
+          containerWidth = sg.containerWidth,
           gridWidth = containerWidth * 3,
           gridX = options.views[options.view].grid.x;
 
@@ -188,7 +197,7 @@
           gridX = options.views[options.view].grid.x,
 
           // Calculated
-          containerWidth = $container.width(),
+          containerWidth = sg.containerWidth,
           gridWidth = containerWidth * 3,
           contentOffset = -(Math.floor(containerWidth / gridX) * gridX);
 
@@ -265,10 +274,7 @@
                   'top: -30px;'+
                   'width:'+el_width+'px;">');
 
-        elements.push('<div class="sg-data" style="'+
-                    'background:'+project.color+';'+
-                    'height:'+el_height+'px;'+
-                    'width:'+el_width+'px;">');
+        elements.push('<div class="sg-data" style="background:'+project.color+';">');
 
         // If the project content is visible
         if(mode.showContent) {
@@ -293,9 +299,9 @@
             elements.push('<div class="sg-task" style="left:'+task_left+'px;"></div>')
           }
 
-          elements.push('</div></div>'); // Close sg-tasks
+          elements.push('</div></div>'); // Close sg-tasks && sg-data
         } else {
-          elements.push("</div>"); // Close sg-data
+          elements.push("</div>"); // Otherwise close sg-data
         }
         elements.push("</div>"); // Close sg-project
       }
@@ -374,7 +380,15 @@
       // Set the content height
       maxRow++;
       content_height = (maxRow * gridY) + (maxRow * projectHeight) + gridY;
+      if(content_height < sg.viewportHeight) {
+        content_height = sg.viewportHeight;
+        sg.content.animate({ marginTop: 0 }, 100);
+      } else if(content_height < sg.content.height()) {
+        sg.content.animate({ marginTop: sg.viewportHeight - content_height }, 100);
+
+      }
       sg.content.css({ height: content_height });
+      console.log(content_height)
     },
 
     dragInit: function() {
@@ -385,7 +399,8 @@
           mouse = positions = {x: 0, y: 0},
           dragging = draggingX = draggingY = false,
           startMoment = curMoment = null,
-          containerHeight = contentHeight = null,
+          viewportHeight = sg.viewportHeight,
+          contentHeight = null,
           lockPadding = 10;
 
       // Bind the drag
@@ -407,7 +422,6 @@
 
           // Store heights for calculating max drag values
           contentHeight = $content.height();
-          containerHeight = sg.container.height() - sg.labels.height();
 
         } else if(e.type === "mousemove" && dragging) {
           if(!draggingX && !draggingY) {
@@ -426,7 +440,7 @@
             } else {
               // Move vertically
               var marginTop = positions.y + (e.pageY - mouse.y),
-                  maxMargin = -(contentHeight - containerHeight);
+                  maxMargin = -(contentHeight - viewportHeight);
 
               if(marginTop > 0) { marginTop = 0; }
               if(marginTop < maxMargin) { marginTop = maxMargin; }
