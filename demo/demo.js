@@ -1,34 +1,46 @@
 $(document).ready(function() {
 
   var storyCount = 1000,
-      stories = [],
       colors = ["blue", "red", "yellow", "green", "brown", "purple", "pink", "orange"],
-      months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+      stories = [];
 
+  // Create some fake data
   for(i=0;i<storyCount;i++) {
-    startYear = endYear = Math.floor(Math.random()*5) + 2009;
-    startMonth = Math.floor(Math.random()*12);
-    startDay = Math.ceil(Math.random()*28);
-    endDay = Math.ceil(Math.random()*28);
-    endMonth = Math.floor(Math.random()*2) + startMonth;
+    // Random start date
+    var startYear = Math.floor(Math.random()*5) + 2009,
+        startMonth = Math.floor(Math.random()*12),
+        startDay = Math.ceil(Math.random()*28),
+
+        // Random end dates
+        endYear = startYear,
+        endMonth = Math.floor(Math.random()*2) + startMonth,
+        endDay = Math.ceil(Math.random()*28);
+
+    // Compensate if month/day is in the next month/day/year
     if(endDay < startDay && startMonth == endMonth) {endMonth++;}
     if(endMonth > 11) {endMonth -= 12}
     if(endMonth < startMonth) {endYear++}
-    startDate = months[startMonth] + " " + startDay + ", " + startYear;
-    endDate = months[endMonth] + " " + endDay + ", " + endYear;
 
-    if(endMonth < startMonth) { endYear++ }
-    tasks = [];
-    days = moment(startDate).diff(moment(endDate), "days");
+    // Create the date labels
+    var startDate = months[startMonth] + " " + startDay + ", " + startYear,
+        endDate = months[endMonth] + " " + endDay + ", " + endYear,
 
-    taskCount = Math.floor(Math.random() * 30)
+        // Create some tasks
+        days = moment(startDate).diff(moment(endDate), "days"),
+        taskCount = Math.floor(Math.random() * 30),
+        tasks = [],
+        date = null;
+
     for(j=0;j<taskCount;j++) {
+      date = moment(startDate).add("days", Math.floor(Math.random() * days));
       task = {
-        date: moment(startDate).add("days", Math.floor(Math.random() * days)).format("MMMM D, YYYY")
+        date: date.format("MMMM D, YYYY")
       }
       tasks.push(task)
     }
 
+    // Create the actual story object
     story = {
       id: i,
       name: "DEMO ",
