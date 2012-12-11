@@ -88,16 +88,22 @@
           $container = sg.container,
           elements = '';
 
-      elements = '<div class="sg-labels"></div>' +
-                  '<div class="sg-content"></div>' +
-                  '<canvas class="sg-grid" style="display: none;"></canvas>';
+      elements =  '<div class="sg-viewport">' +
+                    '<div class="sg-timeline">' +
+                      '<div class="sg-labels"></div>' +
+                      '<div class="sg-content"></div>' +
+                    '</div>' +
+                    '<canvas class="sg-grid"></canvas>' +
+                  '</div>';
 
       // Append the elements
-      $container.css({overflow: "hidden"}).append(elements);
+      $container.append(elements);
 
       // Create jQuery elements
       sg.labels = $container.find(".sg-labels");
       sg.content = $container.find(".sg-content");
+      sg.timeline = $container.find(".sg-timeline")
+      sg.viewport = $container.find(".sg-viewport")
       sg.grid = $container.find(".sg-grid");
     },
 
@@ -181,18 +187,8 @@
           gridWidth = containerWidth * 3,
           contentOffset = -(Math.floor(containerWidth / gridX) * gridX);
 
-      // Set the content to be within our time constraints
-      sg.content.css({
-        height: $container.height() * 2,
+      sg.timeline.css({
         marginLeft: contentOffset,
-        position: "relative",
-        marginTop: options.position.top,
-        width: gridWidth
-      })
-
-      // Set the labels to be within our time constraints
-      sg.labels.css({
-        left: contentOffset,
         width: gridWidth
       })
     },
@@ -360,51 +356,58 @@
 
       // Set the content height
       maxRow++;
-      sg.content.css({
-        height: (maxRow * gridY) + (maxRow * projectHeight) + gridY
-      })
+      height = (maxRow * gridY) + (maxRow * projectHeight) + gridY;
+      sg.content.css({ height: height });
     },
 
     dragInit: function() {
       var sg = this, options = sg.options,
           $content = sg.content,
+          $timeline = sg.timeline,
           gridX = options.views[options.view].grid.x,
-          mouse = container = {x: 0, y: 0},
+          mouse = positions = {x: 0, y: 0},
           dragging = draggingX = draggingY = false,
           startMoment = curMoment = null,
           containerHeight = contentHeight = null,
-          lockPadding = 8;
+          lockPadding = 10;
 
-      $content.off().on("mousedown mousemove mouseup", function(e) {
+      $timeline.off().on("mousedown mousemove mouseup", function(e) {
         if(e.type === "mousedown") {
-          // Turn on dragging and record the initial position
+          // Turn on dragging
           dragging = true;
+
+          // Record the current positions
           mouse = {x: e.pageX, y: e.pageY}
-          container = {
-            x: parseInt($content.css("margin-left")),
+          positions = {
+            x: parseInt($timeline.css("margin-left")),
             y: parseInt($content.css("margin-top"))
           }
+
           // Calculate dates
-          var curDayOffset = Math.round(parseInt($content.css("margin-left")) / gridX);
+          var curDayOffset = Math.round(parseInt($timeline.css("margin-left")) / gridX);
           startMoment = moment(sg.startMoment).subtract("days", curDayOffset);
+
+          // Store heights for calculating max drag values
           contentHeight = $content.height();
-          containerHeight = sg.container.outerHeight();
+          containerHeight = sg.container.height() - sg.labels.height();
+
         } else if(e.type === "mousemove" && dragging) {
-          // Lock the drag to an axis
           if(!draggingX && !draggingY) {
+            // Determine the drag axis
             if(Math.abs(e.pageX - mouse.x) > lockPadding) {
               draggingX = true;
             } else if(Math.abs(e.pageY - mouse.y) > lockPadding) {
               draggingY = true;
             }
           } else {
-            // Move the content within restrictions
+            // Move the content along the drag axis
             if(draggingX) {
-              var marginLeft = container.x + (e.pageX - mouse.x);
-              $content.css({ marginLeft: marginLeft });
-              sg.labels.css({ left: marginLeft });
+              // Move horizontally
+              var marginLeft = positions.x + (e.pageX - mouse.x);
+              $timeline.css({ marginLeft: marginLeft });
             } else {
-              var marginTop = container.y + (e.pageY - mouse.y),
+              // Move vertically
+              var marginTop = positions.y + (e.pageY - mouse.y),
                   maxMargin = -(contentHeight - containerHeight);
 
               if(marginTop > 0) { marginTop = 0; }
@@ -417,9 +420,8 @@
           // Turn off dragging
           dragging = draggingX = draggingY = false;
 
-          // Find the currently selected day based on
-          // the offset of the content
-          var curDayOffset = Math.round(parseInt($content.css("margin-left")) / gridX);
+          // Calculate the currently selected day
+          var curDayOffset = Math.round(parseInt($timeline.css("margin-left")) / gridX);
           curMoment = moment(sg.startMoment).subtract("days", curDayOffset);
 
           if(curMoment.format("MM DD") != startMoment.format("MM DD")) {
