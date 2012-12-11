@@ -315,16 +315,14 @@
             row = 0,
             usedRows = [];
 
-        // TODO: Clean this up to prevent unecessary calculations
         // Loop over every project before this one
         for(var j=0;j<i;j++) {
-          // Determine if this project is within the range of the
-          // currently selected one.
           var project = projects[j],
               projectStart = project.startDate,
               projectEnd = project.endDate;
 
-          // If it is, then we must move it down a row to compensate
+          // Determine if this project is within the range of the
+          // currently selected one.
           if(sg.isBetween(projectStart, selectedStart, projectEnd)) {
             usedRows.push(project.ganttRow);
           } else if(sg.isBetween(selectedStart, projectEnd, selectedEnd)) {
