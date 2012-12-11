@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
   var storyCount = 400,
-      colors = ["blue", "red", "yellow", "green", "brown", "purple", "pink", "orange"],
+      colors = ["red", "green", "brown", "purple", "pink", "orange"],
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       stories = [];
 
@@ -47,7 +47,7 @@ $(document).ready(function() {
       iconURL: "nike-swoosh.gif",
       startDate: startDate,
       endDate: endDate,
-      color: colors[Math.floor(Math.random()*7)],
+      color: colors[Math.floor(Math.random()*colors.length)],
       tasks: tasks
     }
     stories.push(story);

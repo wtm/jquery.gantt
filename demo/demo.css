@@ -12,12 +12,12 @@ body {
 
 .container .sg-content .sg-project {
   border: 1px solid #333;
-  border-radius: 3px;
+  border-radius: 4px;
   color: #FFF;
 }
 
 .container .sg-content .sg-project .sg-icon {
-  border-radius: 3px 0 0 3px;
+  border-radius: 2px 0 0 2px;
 }
 
 .container .sg-content .sg-project .sg-name {

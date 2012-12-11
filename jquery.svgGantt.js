@@ -12,13 +12,13 @@
         views: {
           week: {
             grid: { color: "#DDD", x: 150, y: 10 },
-            format: "MMM, DD", labelEvery: "day", preloadDays: 350 },
+            format: "MMM, DD", labelEvery: "day", preloadDays: 350, currentOffset: 1 },
           month: {
             grid: { color: "#DDD", x: 42, y: 10 },
-            format: "MMM, DD", labelEvery: "day", preloadDays: 250 },
+            format: "MMM, DD", labelEvery: "day", preloadDays: 250, currentOffset: 3 },
           year: {
             grid: { color: "#DDD", x: 13, y: 10 },
-            format: "MMM", labelEvery: "month", preloadDays: 200 }
+            format: "MMM", labelEvery: "month", preloadDays: 200, currentOffset: 5 }
         }
       };
 
@@ -95,6 +95,7 @@
                       '<div class="sg-labels"></div>' +
                       '<div class="sg-content"></div>' +
                     '</div>' +
+                    '<div class="sg-playhead"></div>' +
                     '<canvas class="sg-grid"></canvas>' +
                   '</div>';
 
@@ -106,6 +107,7 @@
       sg.timeline = $container.find(".sg-timeline");
       sg.labels = $container.find(".sg-labels");
       sg.content = $container.find(".sg-content");
+      sg.playhead = $container.find(".sg-playhead");
       sg.grid = $container.find(".sg-grid");
     },
 
@@ -133,12 +135,13 @@
           // Calculated
           containerWidth = sg.containerWidth,
           gridWidth = containerWidth * 3,
-          gridX = options.views[options.view].grid.x;
+          gridX = options.views[options.view].grid.x,
+          daysInContainer = Math.floor(containerWidth / gridX);
 
       // Set up our time variables / constraints
       sg.curMoment = date ? moment(date) : moment();
       sg.daysInGrid = Math.floor(gridWidth / gridX);
-      sg.startMoment = moment(sg.curMoment).subtract("days", Math.floor(containerWidth / gridX));
+      sg.startMoment = moment(sg.curMoment).subtract("days", daysInContainer);
       sg.endMoment = moment(sg.startMoment).add("days", sg.daysInGrid);
     },
 
@@ -194,17 +197,23 @@
       // Static
       var sg = this, options = sg.options,
           $container = sg.container,
-          gridX = options.views[options.view].grid.x,
+          view = options.views[options.view],
+          gridX = view.grid.x,
 
           // Calculated
           containerWidth = sg.containerWidth,
           gridWidth = containerWidth * 3,
-          contentOffset = -(Math.floor(containerWidth / gridX) * gridX);
+          contentOffset = -(Math.floor(containerWidth / gridX) * gridX) + (view.currentOffset * gridX),
+          playheadOffset = view.currentOffset * gridX - Math.floor(sg.playhead.width() / 2);
 
       // Move the timeline to the current date
       sg.timeline.css({
         marginLeft: contentOffset,
         width: gridWidth
+      })
+
+      sg.playhead.css({
+        left: playheadOffset
       })
     },
 
@@ -388,14 +397,14 @@
 
       }
       sg.content.css({ height: content_height });
-      console.log(content_height)
     },
 
     dragInit: function() {
       var sg = this, options = sg.options,
           $content = sg.content,
           $timeline = sg.timeline,
-          gridX = options.views[options.view].grid.x,
+          view = options.views[options.view],
+          gridX = view.grid.x,
           mouse = positions = {x: 0, y: 0},
           dragging = draggingX = draggingY = false,
           startMoment = curMoment = null,
@@ -453,7 +462,7 @@
           dragging = draggingX = draggingY = false;
 
           // Calculate the currently selected day
-          var curDayOffset = Math.round(parseInt($timeline.css("margin-left")) / gridX);
+          var curDayOffset = Math.round((parseInt($timeline.css("margin-left")) - (view.currentOffset * gridX)) / gridX);
           curMoment = moment(sg.startMoment).subtract("days", curDayOffset);
 
           if(curMoment.format("MM DD") != startMoment.format("MM DD")) {

@@ -1,6 +1,7 @@
 .sg-viewport {
   height: 100%;
   overflow: hidden;
+  position: relative;
   width: 100%;
 }
 
@@ -76,6 +77,17 @@
   position: absolute;
   top: 5px;
   width: 5px;
+}
+
+.sg-viewport .sg-playhead {
+  background: blue;
+  height: 300px;
+  left: 80px;
+  opacity: 0.8;
+  position: absolute;
+  top: 30px;
+  width: 3px;
+  z-index: 5004;
 }
 
 .sg-grid {
