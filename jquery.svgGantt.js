@@ -322,14 +322,16 @@
           // currently selected one.
           var project = projects[j],
               projectStart = project.startDate,
-              projectEnd = project.endDate,
-              betweenProjectStart = sg.isBetween(projectStart, selectedStart, projectEnd),
-              betweenProjectEnd = sg.isBetween(projectStart, selectedEnd, projectEnd),
-              betweenSelectedStart = sg.isBetween(selectedStart, projectStart, selectedEnd),
-              betweenSelectedEnd = sg.isBetween(selectedStart, projectEnd, selectedEnd);
+              projectEnd = project.endDate;
 
           // If it is, then we must move it down a row to compensate
-          if(betweenProjectStart || betweenProjectEnd || betweenSelectedStart || betweenSelectedEnd) {
+          if(sg.isBetween(projectStart, selectedStart, projectEnd)) {
+            usedRows.push(project.ganttRow);
+          } else if(sg.isBetween(selectedStart, projectEnd, selectedEnd)) {
+            usedRows.push(project.ganttRow);
+          } else if(sg.isBetween(projectStart, selectedEnd, projectEnd)) {
+            usedRows.push(project.ganttRow);
+          } else if(sg.isBetween(selectedStart, projectStart, selectedEnd)) {
             usedRows.push(project.ganttRow);
           }
         }
