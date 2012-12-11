@@ -10,17 +10,17 @@ body {
   height: 500px;
 }
 
-.container .sg-content .sg-object {
+.container .sg-content .sg-project {
   border: 1px solid #333;
   border-radius: 3px;
   color: #FFF;
 }
 
-.container .sg-content .sg-object .sg-icon {
+.container .sg-content .sg-project .sg-icon {
   border-radius: 3px 0 0 3px;
 }
 
-.container .sg-content .sg-object .sg-name {
+.container .sg-content .sg-project .sg-name {
   padding-top: 3px;
 }
 

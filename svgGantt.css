@@ -2,7 +2,7 @@
   background: #AAA;
   height: 30px;
   position: relative;
-  z-index: 3;
+  z-index: 5003;
 }
 
 .sg-content {
@@ -15,23 +15,57 @@
   user-select: none;
 }
 
-.sg-content .sg-labels div[class*='sg-'] {
+.sg-labels .sg-label {
+  position: absolute;
+  text-align: center;
+  top: 5px;
+}
+
+.sg-labels div[class*='sg-'] {
   margin: 0 auto;
 }
 
-.sg-content .sg-object {
+.sg-content .sg-project {
   position: absolute;
+  z-index: 5;
 }
 
-.sg-content .sg-object .sg-icon {
+.sg-content .sg-project .sg-moments {
+  z-index: 10;
+}
+
+.sg-content .sg-project .sg-data {
+  z-index: 10;
+}
+
+.sg-content .sg-project .sg-icon {
   float: left;
   height: 100%;
   margin-right: 8px;
 }
 
-.sg-content .sg-object .sg-name {
+.sg-content .sg-project .sg-name {
   float: left;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+}
+
+.sg-content .sg-project .sg-tasks {
+  background: black;
+  bottom: 0px;
+  height: 80%;
+  position: absolute;
+  width: 100%;
+  z-index: -10;
+}
+
+.sg-content .sg-project .sg-tasks .sg-tasks {
+  background: #FFF;
+  border-radius: 10px;
+  height: 5px;
+  position: absolute;
+  top: 6px;
+  width: 5px;
 }
