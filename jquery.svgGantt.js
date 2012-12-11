@@ -67,6 +67,7 @@
           projects = sg.projects,
           project = null;
 
+      // Go over each project
       for(i=0;i<projects.length;i++) {
         project = projects[i];
 
@@ -100,10 +101,10 @@
       $container.append(elements);
 
       // Create jQuery elements
+      sg.viewport = $container.find(".sg-viewport");
+      sg.timeline = $container.find(".sg-timeline");
       sg.labels = $container.find(".sg-labels");
       sg.content = $container.find(".sg-content");
-      sg.timeline = $container.find(".sg-timeline")
-      sg.viewport = $container.find(".sg-viewport")
       sg.grid = $container.find(".sg-grid");
     },
 
@@ -115,11 +116,12 @@
     },
 
     setTimeframe: function() {
+      // Static
       var sg = this, options = sg.options,
           $container = sg.container,
           date = options.position.date,
 
-          // The timeframe is calculated by the width of the container
+          // Calculated
           containerWidth = $container.width(),
           gridWidth = containerWidth * 3,
           gridX = options.views[options.view].grid.x;
@@ -132,18 +134,18 @@
     },
 
     setActiveProjects: function() {
+      // Static
       var sg = this, options = sg.options,
           view = options.views[options.view],
-          projects = sg.projects;
+          projects = sg.projects,
 
-      // Set the live projects to only be those that are in view
-      var preloadDays = (view.preloadDays * 24*60*60),
+          // Calculated
+          preloadDays = (view.preloadDays * 24*60*60), // Load extra days
           timelineStart = sg.startMoment.unix() - preloadDays,
           timelineEnd = moment(sg.startMoment).add("days", sg.daysInGrid).unix() + preloadDays;
 
-      // Clear the current active projects
+      // Determine the projects within our timeframe
       sg.activeProjects = [];
-      // Determine if the project falls in between the current time frame
       for(i=0;i<projects.length;i++) {
         var project = projects[i],
             isBetweenStart = sg.isBetween(timelineStart,project.startDate,timelineEnd),
@@ -180,13 +182,17 @@
     },
 
     setPosition: function() {
+      // Static
       var sg = this, options = sg.options,
           $container = sg.container,
-          containerWidth = $container.width(),
           gridX = options.views[options.view].grid.x,
+
+          // Calculated
+          containerWidth = $container.width(),
           gridWidth = containerWidth * 3,
           contentOffset = -(Math.floor(containerWidth / gridX) * gridX);
 
+      // Move the timeline to the current date
       sg.timeline.css({
         marginLeft: contentOffset,
         width: gridWidth
@@ -199,10 +205,12 @@
           gridX = view.grid.x,
           labels = [];
 
+      // Iterate over each day
       for(var i=0;i<sg.daysInGrid;i++) {
         var curMoment = moment(sg.startMoment).add("days", i),
             addLabel = false;
 
+        // Determine if the label should be present
         if(view.labelEvery === "month") {
           if(curMoment.format("D") === "1") { addLabel = true; }
         } else {
@@ -210,8 +218,8 @@
           addLabel = true;
         }
 
+        // Create the label
         if(addLabel) {
-          // Create the label
           var name = curMoment.format(view.format),
               label = '<div class="sg-label" style="'+
                       'left:'+(gridX * i)+'px;'+
@@ -225,14 +233,18 @@
     },
 
     createElements: function() {
+      // Static
       var sg = this, options = sg.options,
           mode = options.modes[options.mode],
           view = options.views[options.view],
           gridX = view.grid.x,
           projects = sg.activeProjects,
           elements = []
+
+          // Calculated
           el_height = view.grid.y * mode.scale - 1;
 
+      // Iterate over each project
       for(i=0;i<projects.length;i++) {
         var project = projects[i],
 
@@ -243,20 +255,20 @@
             daysSinceStart = startDate.diff(sg.startMoment, "days"),
 
             // Element Attributes
-            width = daysBetween * gridX - 2,
-            left = daysSinceStart * gridX;
+            el_width = daysBetween * gridX - 2,
+            el_left = daysSinceStart * gridX;
 
         // Physical project element
         elements.push('<div class="sg-project" style="'+
                   'height:'+el_height+'px;'+
-                  'left:'+left+'px;'+
+                  'left:'+el_left+'px;'+
                   'top: -30px;'+
-                  'width:'+width+'px;">');
+                  'width:'+el_width+'px;">');
 
         elements.push('<div class="sg-data" style="'+
                     'background:'+project.color+';'+
                     'height:'+el_height+'px;'+
-                    'width:'+width+'px;">');
+                    'width:'+el_width+'px;">');
 
         // If the project content is visible
         if(mode.showContent) {
@@ -268,16 +280,17 @@
 
           // The name
           elements.push('<div class="sg-name" style="'+
-                      'width: '+(width - el_height - 8)+'px;">'+
+                      'width: '+(el_width - el_height - 8)+'px;">'+
                       project.name + "</div>");
 
           // The tasks
           elements.push('<div class="sg-tasks">');
 
+          // Iterate over each task
           for(j=0;j<project.tasks.length;j++) {
             var objMoment = project.tasks[j],
-                left = moment(startDate).diff(objMoment.date, "days") * gridX;
-            elements.push('<div class="sg-task" style="left:'+left+'px;"></div>')
+                task_left = moment(startDate).diff(objMoment.date, "days") * gridX;
+            elements.push('<div class="sg-task" style="left:'+task_left+'px;"></div>')
           }
 
           elements.push('</div></div>'); // Close sg-tasks
@@ -292,14 +305,17 @@
     },
 
     arrangeElements: function(animated) {
+      // Static
       var sg = this, options = sg.options,
-          mode = options.modes[options.mode],
           $projects = sg.content.children(),
+          projects = sg.activeProjects,
+          mode = options.modes[options.mode],
           gridY = options.views[options.view].grid.y,
+
+          // Calculated
           paddingY = gridY * mode.paddingY,
           paddingX = mode.paddingX * (24*60*60),
           projectHeight = gridY * mode.scale,
-          projects = sg.activeProjects,
           maxRow = 0;
 
       // Loop over each project
@@ -331,6 +347,7 @@
           }
         }
 
+        // Determine the correct row
         usedRows.sort(function(a,b) { return a-b });
         for(k=0;k<usedRows.length;k++) {
           usedRow = usedRows[k];
@@ -356,8 +373,8 @@
 
       // Set the content height
       maxRow++;
-      height = (maxRow * gridY) + (maxRow * projectHeight) + gridY;
-      sg.content.css({ height: height });
+      content_height = (maxRow * gridY) + (maxRow * projectHeight) + gridY;
+      sg.content.css({ height: content_height });
     },
 
     dragInit: function() {
@@ -371,6 +388,7 @@
           containerHeight = contentHeight = null,
           lockPadding = 10;
 
+      // Bind the drag
       $timeline.off().on("mousedown mousemove mouseup", function(e) {
         if(e.type === "mousedown") {
           // Turn on dragging
