@@ -32,7 +32,7 @@ $(document).ready(function() {
         date = null;
 
     for(j=0;j<taskCount;j++) {
-      date = moment(startDate).add("days", Math.floor(Math.random() * days));
+      date = moment(startDate).add("days", Math.random() * days).add("hours", 18);
       task = {
         date: date.format("MMMM D, YYYY")
       }

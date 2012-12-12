@@ -37,7 +37,6 @@
       jg.parseProjects();
       jg.createUI();
       jg.render();
-      jg.drawGrid();
       jg.createEvents();
     },
 
@@ -71,6 +70,7 @@
           // Create all of the elements
           elements = '<div class="jg-viewport">' +
                         '<div class="jg-timeline">' +
+                          '<div class="jg-loader"></div>' +
                           '<div class="jg-labels"></div>' +
                           '<div class="jg-content"></div>' +
                         '</div>' +
@@ -96,6 +96,7 @@
       jg.clearUI();
       jg.setGlobals(); // Global variables that get calculated a lot
       jg.setActiveProjects(); // Only get the projects in the current timeframe
+      jg.drawGrid();
 
       // Physical Application
       jg.setPosition(); // Determine the current visual position in time
@@ -219,21 +220,25 @@
       // Iterate over each day
       for(var i=0;i<jg.daysInGrid;i++) {
         var curMoment = moment(jg.startMoment).add("days", i),
-            addLabel = false;
+            format = false;
 
         // Determine if the label should be present
         switch(view.labelEvery) {
           case "month":
-            if(curMoment.format("D") === "1") { addLabel = true; }
+            if(curMoment.format("D") === "1") { format = view.format; }
             break;
           default:
-            addLabel = true
+            format = view.format
+        }
+
+        if(format && moment().format("YYYY") != curMoment.format("YYYY")) {
+          format += " YYYY"
         }
 
         // Create the label
-        if(addLabel) {
+        if(format) {
           label = '<div class="jg-label" style="left:'+(gridX * i)+'px;width:'+gridX+'px;">'+
-                    '<div class="jg-'+options.view+'">'+curMoment.format(view.format)+'</div>'+
+                    '<div class="jg-'+options.view+'">'+curMoment.format(format)+'</div>'+
                   '</div>';
 
           labels.push(label);
@@ -335,8 +340,8 @@
 
           // Iterate over each task
           for(j=0;j<project.tasks.length;j++) {
-            var objMoment = project.tasks[j],
-                task_left = moment(startDate).diff(objMoment.date, "days") * gridX;
+            var task = project.tasks[j],
+                task_left = moment(startDate).diff(task.date, "days", true) * gridX;
             elements.push('<div class="jg-task" style="left:'+task_left+'px;"></div>')
           }
 

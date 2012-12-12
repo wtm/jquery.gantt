@@ -27,6 +27,7 @@
 .jg-labels .jg-label {
   position: absolute;
   text-align: center;
+  white-space: nowrap;
 }
 
 .jg-labels div[class*='jg-'] {
