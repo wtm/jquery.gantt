@@ -1,32 +1,26 @@
 body {
-  font-family: Helvetica, Arial;
+  background: #EFEFEF;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 13px;
-  margin: 0px;
-  padding: 0px;
+  padding: 0;
+  margin: 0;
 }
 
-.container {
-  border: 1px solid black;
-  height: 300px;
-}
+h1 { text-align: center; }
 
-.container .sg-content .sg-project {
-  border: 1px solid #333;
-  border-radius: 4px;
-  color: #FFF;
-}
+.forkme { position: absolute; top: 0; left: 0; border: 0; }
 
-.container .sg-content .sg-project .sg-icon {
-  border-radius: 2px 0 0 2px;
-}
+#nav { text-align: center; }
 
-.container .sg-content .sg-project .sg-name {
-  padding-top: 3px;
-}
+ul.description { list-style: none; padding: 0; }
+ul.description li { margin-bottom: 8px; }
 
-.container .sg-labels .sg-month {
-  font-size: 9px;
-  padding-top: 4px;
+.hr {
+  background: #DDD;
+  border-bottom: 1px solid #FFF;
+  height: 1px;
+  margin: 25px 0;
+  width: 100%;
 }
 
 .toolbelt {
@@ -37,4 +31,11 @@ body {
 .toolbelt li {
   float: left;
   margin-right: 8px;
+}
+
+.container {
+  border: 1px solid #000;
+  height: 300px;
+  margin: 0 auto;
+  width: 90%;
 }

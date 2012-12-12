@@ -1,11 +1,13 @@
-.sg-viewport {
+.jg-viewport {
+  font-family: Helvetica, Arial, sans-serif;
   height: 100%;
   overflow: hidden;
   position: relative;
   width: 100%;
+  cursor: move;
 }
 
-.sg-timeline {
+.jg-timeline {
   position: relative;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -15,53 +17,66 @@
   user-select: none;
 }
 
-.sg-labels {
+.jg-labels {
   background: #AAA;
   height: 30px;
   position: relative;
   z-index: 5003;
 }
 
-.sg-labels .sg-label {
+.jg-labels .jg-label {
   position: absolute;
   text-align: center;
-  top: 5px;
 }
 
-.sg-labels div[class*='sg-'] {
+.jg-labels div[class*='jg-'] {
   margin: 0 auto;
 }
 
-.sg-content {
-  cursor: move;
+.jg-label .jg-year {
+  font-size: 13px;
+  padding-top: 7px;
+}
+
+.jg-label .jg-month {
+  font-size: 9px;
+  padding-top: 10px;
+}
+
+.jg-label .jg-week {
+  font-size: 12px;
+  padding-top: 8px;
+}
+
+.jg-content {
   position: relative;
 }
 
-.sg-content .sg-project {
+.jg-content .jg-project {
   position: absolute;
   z-index: 5;
 }
 
-.sg-content .sg-project .sg-data {
+.jg-content .jg-project .jg-data {
   height: 100%;
   width: 100%;
   z-index: 10;
 }
 
-.sg-content .sg-project .sg-icon {
+.jg-content .jg-project .jg-icon {
   float: left;
   height: 100%;
   margin-right: 8px;
 }
 
-.sg-content .sg-project .sg-name {
+.jg-content .jg-project .jg-name {
   float: left;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.sg-content .sg-project .sg-tasks {
+.jg-content .jg-project .jg-tasks {
   background: black;
   bottom: 0px;
   height: 80%;
@@ -70,7 +85,7 @@
   z-index: -10;
 }
 
-.sg-content .sg-project .sg-tasks .sg-task {
+.jg-content .jg-project .jg-tasks .jg-task {
   background: #FFF;
   border-radius: 10px;
   height: 5px;
@@ -79,17 +94,17 @@
   width: 5px;
 }
 
-.sg-viewport .sg-playhead {
+.jg-viewport .jg-playhead {
   background: blue;
   height: 300px;
   left: 80px;
-  opacity: 0.8;
+  opacity: 0.4;
   position: absolute;
   top: 30px;
   width: 3px;
-  z-index: 5004;
+  z-index: 1;
 }
 
-.sg-grid {
+.jg-grid {
   display: none;
 }

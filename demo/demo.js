@@ -1,6 +1,5 @@
 $(document).ready(function() {
-
-  var storyCount = 400,
+  var storyCount = 1000,
       colors = ["red", "green", "brown", "purple", "pink", "orange"],
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       stories = [];
@@ -52,7 +51,7 @@ $(document).ready(function() {
     }
     stories.push(story);
   }
-  $(".container").svgGantt(stories, {position: {date: "December 1, 2012"}});
+  $(".container").gantt(stories);
 
   $(".toolbelt a").on("click", function() {
     if($(this).hasClass("view")) {
