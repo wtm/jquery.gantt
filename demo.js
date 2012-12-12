@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  var storyCount = 900,
+  var storyCount = 5400,
       colors = ["red", "green", "brown", "purple", "pink", "orange"],
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       stories = [];
@@ -32,7 +32,7 @@ $(document).ready(function() {
         date = null;
 
     for(j=0;j<taskCount;j++) {
-      date = moment(startDate).add("days", Math.floor(Math.random() * days));
+      date = moment(startDate).add("days", Math.random() * days).add("hours", 18);
       task = {
         date: date.format("MMMM D, YYYY")
       }
@@ -43,7 +43,7 @@ $(document).ready(function() {
     story = {
       id: i,
       name: "DEMO ",
-      iconURL: "images/nike-swoosh.gif",
+      iconURL: "nike-swoosh.gif",
       startDate: startDate,
       endDate: endDate,
       color: colors[Math.floor(Math.random()*colors.length)],
@@ -56,8 +56,10 @@ $(document).ready(function() {
   $(".toolbelt a").on("click", function() {
     if($(this).hasClass("view")) {
       $(".container").trigger("gantt-changeView", $(this).attr("class").split(" ")[1]);
+    } else if($(this).hasClass("collapse")) {
+      $(".container").trigger("gantt-collapse");
     } else {
-      $(".container").trigger("gantt-collapse", $(this).attr("class"));
+      $(".container").trigger("gantt-moveto", null);
     }
   })
 })
