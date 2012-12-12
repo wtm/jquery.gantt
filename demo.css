@@ -1,0 +1,41 @@
+body {
+  background: #EFEFEF;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  padding: 0;
+  margin: 0;
+}
+
+h1 { text-align: center; }
+
+.forkme { position: absolute; top: 0; left: 0; border: 0; }
+
+#nav { text-align: center; }
+
+ul.description { list-style: none; padding: 0; }
+ul.description li { margin-bottom: 8px; }
+
+.hr {
+  background: #DDD;
+  border-bottom: 1px solid #FFF;
+  height: 1px;
+  margin: 25px 0;
+  width: 100%;
+}
+
+.toolbelt {
+  height: 50px;
+  list-style: none;
+}
+
+.toolbelt li {
+  float: left;
+  margin-right: 8px;
+}
+
+.container {
+  border: 1px solid #000;
+  height: 300px;
+  margin: 0 auto;
+  width: 90%;
+}
