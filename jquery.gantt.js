@@ -353,13 +353,14 @@
       }
 
       // Set the content height
-      maxRow++;
+      maxRow += 2;
       content_height = (maxRow * gridY) + (maxRow * el_height) + gridY;
+      content_offset = -(parseInt(jg.content.css("margin-top")))
       if(content_height < jg.viewportHeight) {
         // If the height is smaller than the the viewport/container height
         content_height = jg.viewportHeight;
         jg.content.animate({ marginTop: 0 }, 100);
-      } else if(content_height < -(parseInt(jg.content.css("margin-top"))) + jg.viewportHeight) {
+      } else if(content_height < content_offset + jg.viewportHeight) {
         // If the height is smaller than the current Y offset
         jg.content.animate({ marginTop: jg.viewportHeight - content_height }, 100);
       }
