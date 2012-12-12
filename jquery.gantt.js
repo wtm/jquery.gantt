@@ -11,7 +11,7 @@
         views: {
           week: {
             grid: { color: "#DDD", x: 150, y: 10 },
-            format: "MMM, DD", labelEvery: "day", preloadDays: 200, dayOffset: 1, highlightDays: 10 },
+            format: "MMM, DD", labelEvery: "day", preloadDays: 200, dayOffset: 1, highlightDays: 7 },
           month: {
             grid: { color: "#DDD", x: 42, y: 10 },
             format: "MMM, DD", labelEvery: "day", preloadDays: 150, dayOffset: 3, highlightDays: 10 },
@@ -448,6 +448,12 @@
     createEvents: function() {
       var jg = this, options = jg.options,
           $container = jg.container;
+
+      // Move to today
+      $container.off("gantt-moveto").on("gantt-moveto", function(e, date) {
+        options.position.date = date;
+        jg.render();
+      });
 
       // Change the current view
       $container.off("gantt-changeView").on("gantt-changeView", function(e, view) {
