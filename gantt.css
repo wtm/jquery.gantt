@@ -17,6 +17,20 @@
   user-select: none;
 }
 
+.jg-loader {
+  background: url('ajax-loader.gif');
+  box-shadow: 0 0 20px #000;
+  display: none;
+  height: 19px;
+  left: 50%;
+  margin-left: -110px;
+  margin-top: -9px;
+  position: absolute;
+  top: 50%;
+  width: 220px;
+  z-index: 6000;
+}
+
 .jg-labels {
   background: #AAA;
   height: 30px;
@@ -27,7 +41,6 @@
 .jg-labels .jg-label {
   position: absolute;
   text-align: center;
-  white-space: nowrap;
 }
 
 .jg-labels div[class*='jg-'] {
@@ -37,6 +50,7 @@
 .jg-label .jg-year {
   font-size: 13px;
   padding-top: 7px;
+  white-space: nowrap;
 }
 
 .jg-label .jg-month {
@@ -71,7 +85,9 @@
 }
 
 .jg-content .jg-project .jg-name {
+  color: #FFF;
   float: left;
+  margin-top: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

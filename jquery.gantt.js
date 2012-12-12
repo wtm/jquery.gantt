@@ -11,10 +11,10 @@
         views: {
           week: {
             grid: { color: "#DDD", x: 150, y: 10 },
-            format: "MMM, DD", labelEvery: "day", preloadDays: 200, dayOffset: 1, highlightDays: 7 },
+            format: "MMM DD", labelEvery: "day", preloadDays: 200, dayOffset: 1, highlightDays: 7 },
           month: {
             grid: { color: "#DDD", x: 42, y: 10 },
-            format: "MMM, DD", labelEvery: "day", preloadDays: 150, dayOffset: 3, highlightDays: 10 },
+            format: "MMM DD", labelEvery: "day", preloadDays: 150, dayOffset: 3, highlightDays: 10 },
           year: {
             grid: { color: "#DDD", x: 13, y: 10 },
             format: "MMM", labelEvery: "month", preloadDays: 100, dayOffset: 5, highlightDays: 10 }
@@ -70,7 +70,6 @@
           // Create all of the elements
           elements = '<div class="jg-viewport">' +
                         '<div class="jg-timeline">' +
-                          '<div class="jg-loader"></div>' +
                           '<div class="jg-labels"></div>' +
                           '<div class="jg-content"></div>' +
                         '</div>' +
@@ -232,7 +231,7 @@
         }
 
         if(format && moment().format("YYYY") != curMoment.format("YYYY")) {
-          format += " YYYY"
+          format += ", YYYY"
         }
 
         // Create the label
