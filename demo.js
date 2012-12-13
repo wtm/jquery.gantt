@@ -43,7 +43,7 @@ $(document).ready(function() {
     story = {
       id: i,
       name: "DEMO ",
-      iconURL: "nike-swoosh.gif",
+      iconURL: "images/nike-swoosh.gif",
       startDate: startDate,
       endDate: endDate,
       color: colors[Math.floor(Math.random()*colors.length)],
