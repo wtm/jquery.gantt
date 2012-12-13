@@ -109,9 +109,9 @@
       jg.dragInit(); // Loop through the projects and create elements
       console.time("set name and vertical time")
       jg.setNamePositions();
+      console.timeEnd("set name and vertical time")
       jg.setVerticalHints();
       jg.createEvents();
-      console.timeEnd("set name and vertical time")
     },
 
     clearUI: function() {
@@ -211,7 +211,7 @@
 
       // Move the timeline to the current date
       jg.timeline.css({
-        marginLeft: contentOffset,
+        left: contentOffset,
         width: jg.timelineWidth
       })
 
@@ -402,12 +402,12 @@
           // Record the current positions
           mouse = {x: e.pageX, y: e.pageY}
           positions = {
-            x: parseInt($timeline.css("margin-left")),
+            x: $timeline.position().left,
             y: jg.content.position().top
           }
 
           // Calculate dates
-          var curDayOffset = Math.round(parseInt($timeline.css("margin-left")) / gridX);
+          var curDayOffset = Math.round($timeline.position().left / gridX);
           startMoment = moment(jg.startMoment).subtract("days", curDayOffset);
 
           // Store heights for calculating max drag values
@@ -425,8 +425,8 @@
             // Move the content along the drag axis
             if(draggingX) {
               // Move horizontally
-              var marginLeft = positions.x + (e.pageX - mouse.x);
-              $timeline.css({ marginLeft: marginLeft });
+              var left = positions.x + (e.pageX - mouse.x);
+              $timeline.css({ left: left });
               jg.setNamePositions();
             } else {
               // Move vertically
@@ -445,7 +445,7 @@
           dragging = draggingX = draggingY = false;
 
           // Calculate the currently selected day
-          var curDayOffset = Math.round((parseInt($timeline.css("margin-left")) - jg.dayOffset) / gridX);
+          var curDayOffset = Math.round(($timeline.position().left - jg.dayOffset) / gridX);
           curMoment = moment(jg.startMoment).subtract("days", curDayOffset);
 
           if(curMoment.format("MM DD") != startMoment.format("MM DD")) {
@@ -461,16 +461,17 @@
     setNamePositions: function() {
       var jg = this,
           $projects = $('.jg-project'),
-          timelineOffset = -(parseInt(jg.timeline.css("margin-left")));
+          timelineOffset = -(jg.timeline.position().left);
 
-      $projects.each(function() {
-        var projOffset = $(this).position().left;
+      for(var i=0;i<$projects.length;i++) {
+        var $project = $($projects[i]),
+            projOffset = $project.position().left;
 
         if(projOffset < timelineOffset + 100) {
-          var projWidth = $(this).width();
+          var projWidth = $project.width();
 
           if(projOffset + projWidth > timelineOffset - 100) {
-            var $name = $(this).find(".jg-name"),
+            var $name = $project.find(".jg-name"),
                 dataWidth = projWidth - (timelineOffset - projOffset);
 
             if(dataWidth <= projWidth) {
@@ -480,7 +481,7 @@
             }
           }
         }
-      })
+      }
     },
 
     setVerticalHints: function() {
