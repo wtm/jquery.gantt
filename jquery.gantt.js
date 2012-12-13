@@ -145,6 +145,9 @@
       jg.startMoment = moment(jg.curMoment).subtract("days", jg.daysUntilCurrent);
       jg.endMoment = moment(jg.startMoment).add("days", jg.daysInGrid);
       jg.dayOffset = jg.view.dayOffset * gridX;
+
+      // Others
+      jg.settingNamePositions = false;
     },
 
     setActiveProjects: function() {
@@ -461,13 +464,21 @@
           timelineOffset = -(parseInt(jg.timeline.css("margin-left")));
 
       $projects.each(function() {
-        var $name = $(this).find(".jg-name"),
-            projWidth = $(this).width(),
-            projOffset = $(this).position().left,
-            dataWidth = projWidth - (timelineOffset - projOffset);
+        var projOffset = $(this).position().left;
 
-        if(dataWidth < projWidth) {
-          $name.width(dataWidth)
+        if(projOffset < timelineOffset + 100) {
+          var projWidth = $(this).width();
+
+          if(projOffset + projWidth > timelineOffset - 100) {
+            var $name = $(this).find(".jg-name"),
+                dataWidth = projWidth - (timelineOffset - projOffset);
+
+            if(dataWidth <= projWidth) {
+              $name.width(dataWidth)
+            } else {
+              $name.width(projWidth)
+            }
+          }
         }
       })
     },
