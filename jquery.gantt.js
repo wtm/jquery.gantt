@@ -344,7 +344,7 @@
         // If the project content is visible
         if(mode.showContent) {
           // The image and name
-          elements.push('<div class="jg-name">'+
+          elements.push('<div class="jg-name" style="height:'+el_height+'px;">'+
                       '<img class="jg-icon" src="'+project.iconURL+'" />'+
                       project.name + '</div>');
         }
@@ -459,26 +459,34 @@
     },
 
     setNamePositions: function() {
-      var jg = this,
-          $projects = $('.jg-project'),
-          timelineOffset = -(jg.timeline.position().left);
+      var jg = this;
 
-      for(var i=0;i<$projects.length;i++) {
-        var $project = $($projects[i]),
-            projOffset = $project.position().left;
+      if(jg.mode.showContent) {
+        var $projects = $('.jg-project'),
+            timelineOffset = -(jg.timeline.position().left),
+            complete = false;
 
-        if(projOffset < timelineOffset + 100) {
-          var projWidth = $project.width();
+        for(var i=0;i<$projects.length;i++) {
+          var $project = $($projects[i]),
+              projOffset = $project.position().left;
 
-          if(projOffset + projWidth > timelineOffset - 100) {
-            var $name = $project.find(".jg-name"),
-                dataWidth = projWidth - (timelineOffset - projOffset);
+          if(projOffset < timelineOffset + 100) {
+            var projWidth = $project.width();
 
-            if(dataWidth <= projWidth) {
-              $name.width(dataWidth)
-            } else {
-              $name.width(projWidth)
+            if(projOffset + projWidth > timelineOffset - 100) {
+              var $name = $project.find(".jg-name"),
+                  dataWidth = projWidth - (timelineOffset - projOffset);
+
+              if(dataWidth <= projWidth) {
+                $name.width(dataWidth)
+              } else {
+                $name.width(projWidth)
+              }
             }
+            complete = true;
+          } else if(complete) {
+            console.log(i, $projects.length)
+            return false;
           }
         }
       }
