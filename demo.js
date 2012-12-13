@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  var storyCount = 400,
+  var storyCount = 500,
       colors = ["red", "green", "brown", "purple", "pink", "orange"],
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       stories = [];
@@ -43,7 +43,7 @@ $(document).ready(function() {
     story = {
       id: i,
       name: "DEMO ",
-      iconURL: "images/nike-swoosh.gif",
+      iconURL: "nike-swoosh.gif",
       startDate: startDate,
       endDate: endDate,
       color: colors[Math.floor(Math.random()*colors.length)],

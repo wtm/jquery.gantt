@@ -7,6 +7,14 @@
   cursor: move;
 }
 
+.jg-glow {
+  margin-left: -25%;
+  position: absolute;
+  top: 30px;
+  width: 150%;
+  z-index: 6000;
+}
+
 .jg-timeline {
   position: relative;
   -webkit-touch-callout: none;
