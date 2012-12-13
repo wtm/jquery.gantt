@@ -37,7 +37,6 @@
       jg.parseProjects();
       jg.createUI();
       jg.render();
-      jg.createEvents();
     },
 
     parseProjects: function() {
@@ -72,8 +71,9 @@
                         '<div class="jg-timeline">' +
                           '<div class="jg-dates"></div>' +
                           '<div class="jg-content-wrap">' +
-                            '<div class="jg-glow"></div>' +
+                            '<div class="jg-glow-top"></div>' +
                             '<div class="jg-content"></div>' +
+                            '<div class="jg-glow-bottom"></div>' +
                           '</div>' +
                         '</div>' +
                         '<div class="jg-playhead"></div>' +
@@ -84,7 +84,8 @@
 
       // Create jQuery elements
       jg.contentWrap = $container.find(".jg-content-wrap");
-      jg.glow = $container.find(".jg-glow");
+      jg.glowTop = $container.find(".jg-glow-top");
+      jg.glowBottom = $container.find(".jg-glow-bottom");
       jg.content = $container.find(".jg-content");
       jg.dates = $container.find(".jg-dates");
       jg.grid = $container.find(".jg-grid");
@@ -109,6 +110,7 @@
       console.time("set name and vertical time")
       jg.setNamePositions();
       jg.setVerticalHints();
+      jg.createEvents();
       console.timeEnd("set name and vertical time")
     },
 
@@ -210,8 +212,8 @@
         width: jg.timelineWidth
       })
 
-      jg.glow.css({
-        height: jg.viewportHeight
+      jg.glowBottom.css({
+       top: jg.viewportHeight - jg.glowBottom.height()
       })
 
       jg.playhead.css({
@@ -338,24 +340,24 @@
 
         // If the project content is visible
         if(mode.showContent) {
-          // The image icon
+          // The image and name
           elements.push('<img class="jg-icon" '+
                       'src="'+project.iconURL+'" />'+
                       '<div class="jg-name" style="'+
                       'width: '+(el_width - el_height - 8)+'px;">'+
-                      project.name + "</div>"+
-                      '<div class="jg-tasks">');
+                      project.name + '</div>');
+        }
+        elements.push('</div>'); // Close jg-data
 
+        if(mode.showContent) {
+          elements.push('<div class="jg-tasks">'); // Close jg-data
           // Iterate over each task
           for(j=0;j<project.tasks.length;j++) {
             var task = project.tasks[j],
                 task_left = moment(startDate).diff(task.date, "days", true) * gridX;
             elements.push('<div class="jg-task" style="left:'+task_left+'px;"></div>')
           }
-
-          elements.push('</div></div>'); // Close jg-tasks && jg-data
-        } else {
-          elements.push("</div>"); // Otherwise close jg-data
+          elements.push("</div>"); // Close jg-tasks
         }
         elements.push("</div>"); // Close jg-project
       }
@@ -480,7 +482,7 @@
         }
         jg.render();
       });
-
+      console.log("oasd")
       $(".jg-project").off().on("mouseenter mouseleave", function(e) {
         if(e.type === "mouseenter") {
           $(this).find(".jg-tasks").animate({ top: 20 }, 100);
@@ -527,12 +529,12 @@
       offsetTop = offsetTop / 10;
       offsetBottom = offsetBottom / 10;
 
-      boxShadow = "inset 0 -"+offsetBottom+"px "+offsetBottom+"px 0 rgba(0,0,0,0.3), " +
-                  "inset 0 "+offsetTop+"px "+offsetTop+"px 0 rgba(0,0,0,0.3)"
+      jg.glowTop.css({
+        boxShadow: "inset 0 "+offsetTop+"px "+(offsetTop * 3)+"px 0 rgba(0,0,0,0.3)"
+      })
 
-
-      jg.glow.css({
-        boxShadow: boxShadow
+      jg.glowBottom.css({
+        boxShadow: "inset 0 -"+offsetBottom+"px "+(offsetBottom * 3)+"px 0 rgba(0,0,0,0.3)"
       })
     },
 

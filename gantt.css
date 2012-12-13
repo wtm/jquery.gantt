@@ -7,8 +7,19 @@
   cursor: move;
 }
 
-.jg-glow {
+.jg-glow-top {
+  height: 10px;
   margin-left: -25%;
+  pointer-events: none;
+  position: absolute;
+  width: 150%;
+  z-index: 6000;
+}
+
+.jg-glow-bottom {
+  height: 10px;
+  margin-left: -25%;
+  pointer-events: none;
   position: absolute;
   width: 150%;
   z-index: 6000;
