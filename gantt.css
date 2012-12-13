@@ -96,6 +96,7 @@
 .jg-content .jg-project .jg-name {
   color: #FFF;
   float: right;
+  height: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

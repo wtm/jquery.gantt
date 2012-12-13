@@ -344,7 +344,7 @@
         // If the project content is visible
         if(mode.showContent) {
           // The image and name
-          elements.push('<div class="jg-name" style="height:'+el_height+'px;">'+
+          elements.push('<div class="jg-name">'+
                       '<img class="jg-icon" src="'+project.iconURL+'" />'+
                       project.name + '</div>');
         }
