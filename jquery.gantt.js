@@ -340,9 +340,7 @@
         if(mode.showContent) {
           // The image icon
           elements.push('<img class="jg-icon" '+
-                      'src="'+project.iconURL+'" style="'+
-                      'height: '+el_height+';'+
-                      'width: '+el_height+';" />'+
+                      'src="'+project.iconURL+'" />'+
                       '<div class="jg-name" style="'+
                       'width: '+(el_width - el_height - 8)+'px;">'+
                       project.name + "</div>"+
