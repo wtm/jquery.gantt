@@ -10,7 +10,6 @@
 .jg-glow {
   margin-left: -25%;
   position: absolute;
-  top: 30px;
   width: 150%;
   z-index: 6000;
 }
@@ -25,33 +24,19 @@
   user-select: none;
 }
 
-.jg-loader {
-  background: url('ajax-loader.gif');
-  box-shadow: 0 0 20px #000;
-  display: none;
-  height: 19px;
-  left: 50%;
-  margin-left: -110px;
-  margin-top: -9px;
-  position: absolute;
-  top: 50%;
-  width: 220px;
-  z-index: 6000;
-}
-
-.jg-labels {
+.jg-dates {
   background: #AAA;
   height: 30px;
   position: relative;
   z-index: 5003;
 }
 
-.jg-labels .jg-label {
+.jg-dates .jg-label {
   position: absolute;
   text-align: center;
 }
 
-.jg-labels div[class*='jg-'] {
+.jg-dates div[class*='jg-'] {
   margin: 0 auto;
 }
 
@@ -69,6 +54,10 @@
 .jg-label .jg-week {
   font-size: 12px;
   padding-top: 8px;
+}
+
+.jg-content-wrap {
+  position: relative;
 }
 
 .jg-content {

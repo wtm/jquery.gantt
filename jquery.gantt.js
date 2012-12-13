@@ -69,22 +69,25 @@
 
           // Create all of the elements
           elements = '<div class="jg-viewport">' +
-                        '<div class="jg-glow"></div>' +
                         '<div class="jg-timeline">' +
-                          '<div class="jg-labels"></div>' +
-                          '<div class="jg-content"></div>' +
+                          '<div class="jg-dates"></div>' +
+                          '<div class="jg-content-wrap">' +
+                            '<div class="jg-glow"></div>' +
+                            '<div class="jg-content"></div>' +
+                          '</div>' +
                         '</div>' +
                         '<div class="jg-playhead"></div>' +
                         '<canvas class="jg-grid"></canvas>' +
                       '</div>';
 
-      $container.append(elements);
+      $container.empty().append(elements);
 
       // Create jQuery elements
-      jg.content = $container.find(".jg-content");
-      jg.grid = $container.find(".jg-grid");
+      jg.contentWrap = $container.find(".jg-content-wrap");
       jg.glow = $container.find(".jg-glow");
-      jg.labels = $container.find(".jg-labels");
+      jg.content = $container.find(".jg-content");
+      jg.dates = $container.find(".jg-dates");
+      jg.grid = $container.find(".jg-grid");
       jg.playhead = $container.find(".jg-playhead");
       jg.timeline = $container.find(".jg-timeline");
       jg.viewport = $container.find(".jg-viewport");
@@ -103,17 +106,17 @@
       jg.drawLabels(); // Draw the grid background
       jg.createElements(); // Loop through the projects and create elements
       jg.dragInit(); // Loop through the projects and create elements
-      console.time("render time")
+      console.time("set name and vertical time")
       jg.setNamePositions();
       jg.setVerticalHints();
-      console.timeEnd("render time")
+      console.timeEnd("set name and vertical time")
     },
 
     clearUI: function() {
       var jg = this;
 
       jg.content.empty();
-      jg.labels.empty();
+      jg.dates.empty();
     },
 
     setGlobals: function() {
@@ -128,7 +131,7 @@
       // Calculate Dimensions
       jg.containerWidth = $container.width();
       jg.timelineWidth = jg.containerWidth * 3;
-      jg.viewportHeight = $container.height() - jg.labels.height();
+      jg.viewportHeight = $container.height() - jg.dates.height();
 
       // Calculate Timeframes
       var date = options.position.date,
@@ -251,7 +254,7 @@
           labels.push(label);
         }
       }
-      jg.labels.append(labels.join(''));
+      jg.dates.append(labels.join(''));
     },
 
     createElements: function() {
@@ -362,14 +365,14 @@
       // Set the content height
       maxRow += 2;
       content_height = (maxRow * gridY) + (maxRow * el_height) + gridY;
-      content_offset = -(parseInt(jg.content.css("margin-top")))
+      content_offset = -(jg.content.position().top)
       if(content_height < jg.viewportHeight) {
         // If the height is smaller than the the viewport/container height
         content_height = jg.viewportHeight;
-        jg.content.animate({ marginTop: 0 }, 100);
+        jg.content.animate({ top: 0 }, 100);
       } else if(content_height < content_offset + jg.viewportHeight) {
         // If the height is smaller than the current Y offset
-        jg.content.animate({ marginTop: jg.viewportHeight - content_height }, 100);
+        jg.content.animate({ top: jg.viewportHeight - content_height }, 100);
       }
 
       // Append the elements
@@ -399,7 +402,7 @@
           mouse = {x: e.pageX, y: e.pageY}
           positions = {
             x: parseInt($timeline.css("margin-left")),
-            y: parseInt($content.css("margin-top"))
+            y: jg.content.position().top
           }
 
           // Calculate dates
@@ -431,7 +434,7 @@
 
               if(marginTop > 0) { marginTop = 0; }
               if(marginTop < maxMargin) { marginTop = maxMargin; }
-              $content.css({ marginTop: marginTop });
+              $content.css({ top: marginTop });
               jg.setVerticalHints();
             }
           }
@@ -447,7 +450,7 @@
           if(curMoment.format("MM DD") != startMoment.format("MM DD")) {
             // Set the new day as the current moment
             options.position.date = curMoment;
-            options.position.top = parseInt($content.css("margin-top"));
+            options.position.top = jg.content.position().top;
             jg.render();
           }
         }
@@ -516,7 +519,7 @@
 
     setVerticalHints: function() {
       var jg = this,
-          offsetTop = -(parseInt(jg.content.css("margin-top"))),
+          offsetTop = -(jg.content.position().top),
           offsetBottom = jg.content.height() - offsetTop - jg.viewportHeight;
 
 
