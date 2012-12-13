@@ -91,7 +91,6 @@
     render: function() {
       var jg = this;
 
-      console.time("render time")
       jg.clearUI();
       jg.setGlobals(); // Global variables that get calculated a lot
       jg.setActiveProjects(); // Only get the projects in the current timeframe
@@ -102,6 +101,8 @@
       jg.drawLabels(); // Draw the grid background
       jg.createElements(); // Loop through the projects and create elements
       jg.dragInit(); // Loop through the projects and create elements
+      console.time("render time")
+      jg.setNamePositions();
       console.timeEnd("render time")
     },
 
@@ -415,6 +416,7 @@
               // Move horizontally
               var marginLeft = positions.x + (e.pageX - mouse.x);
               $timeline.css({ marginLeft: marginLeft });
+              jg.setNamePositions();
             } else {
               // Move vertically
               var marginTop = positions.y + (e.pageY - mouse.y),
@@ -475,6 +477,31 @@
           $(this).find(".jg-tasks").animate({ top: 20 }, 100);
         } else {
           $(this).find(".jg-tasks").animate({ top: 0 }, 100);
+        }
+      })
+    },
+
+    setNamePositions: function() {
+      var jg = this,
+          $projects = $('.jg-project'),
+          offsetLeft = -(parseInt(jg.timeline.css("margin-left")));
+
+      $projects.each(function() {
+        var width = $(this).width(),
+            leftOffset = $(this).position().left,
+            rightOffset = leftOffset + width;
+
+        if(leftOffset < offsetLeft && offsetLeft < rightOffset) {
+          var $img = $(this).find(".jg-icon"),
+              $name = $(this).find(".jg-name"),
+              imageMargin = width - (rightOffset - offsetLeft),
+              textWidth = width - imageMargin - 50;
+          $img.css({
+            marginLeft: imageMargin
+          })
+          $name.css({
+            width: textWidth
+          })
         }
       })
     },
