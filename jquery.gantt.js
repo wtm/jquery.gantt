@@ -69,6 +69,7 @@
 
           // Create all of the elements
           elements = '<div class="jg-viewport">' +
+                        '<div class="jg-glow"></div>' +
                         '<div class="jg-timeline">' +
                           '<div class="jg-labels"></div>' +
                           '<div class="jg-content"></div>' +
@@ -82,6 +83,7 @@
       // Create jQuery elements
       jg.content = $container.find(".jg-content");
       jg.grid = $container.find(".jg-grid");
+      jg.glow = $container.find(".jg-glow");
       jg.labels = $container.find(".jg-labels");
       jg.playhead = $container.find(".jg-playhead");
       jg.timeline = $container.find(".jg-timeline");
@@ -103,6 +105,7 @@
       jg.dragInit(); // Loop through the projects and create elements
       console.time("render time")
       jg.setNamePositions();
+      jg.setVerticalHints();
       console.timeEnd("render time")
     },
 
@@ -202,6 +205,10 @@
       jg.timeline.css({
         marginLeft: contentOffset,
         width: jg.timelineWidth
+      })
+
+      jg.glow.css({
+        height: jg.viewportHeight
       })
 
       jg.playhead.css({
@@ -425,6 +432,7 @@
               if(marginTop > 0) { marginTop = 0; }
               if(marginTop < maxMargin) { marginTop = maxMargin; }
               $content.css({ marginTop: marginTop });
+              jg.setVerticalHints();
             }
           }
 
@@ -503,6 +511,27 @@
             width: textWidth
           })
         }
+      })
+    },
+
+    setVerticalHints: function() {
+      var jg = this,
+          offsetTop = -(parseInt(jg.content.css("margin-top"))),
+          offsetBottom = jg.content.height() - offsetTop - jg.viewportHeight;
+
+
+      if(offsetTop > 30) {offsetTop = 30;}
+      if(offsetBottom > 30) {offsetBottom = 30;}
+
+      offsetTop = offsetTop / 10;
+      offsetBottom = offsetBottom / 10;
+
+      boxShadow = "inset 0 -"+offsetBottom+"px "+offsetBottom+"px 0 rgba(0,0,0,0.3), " +
+                  "inset 0 "+offsetTop+"px "+offsetTop+"px 0 rgba(0,0,0,0.3)"
+
+
+      jg.glow.css({
+        boxShadow: boxShadow
       })
     },
 
