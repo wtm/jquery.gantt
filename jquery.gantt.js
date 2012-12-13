@@ -341,10 +341,8 @@
         // If the project content is visible
         if(mode.showContent) {
           // The image and name
-          elements.push('<img class="jg-icon" '+
-                      'src="'+project.iconURL+'" />'+
-                      '<div class="jg-name" style="'+
-                      'width: '+(el_width - el_height - 8)+'px;">'+
+          elements.push('<div class="jg-name">'+
+                      '<img class="jg-icon" src="'+project.iconURL+'" />'+
                       project.name + '</div>');
         }
         elements.push('</div>'); // Close jg-data
@@ -457,6 +455,44 @@
       })
     },
 
+    setNamePositions: function() {
+      var jg = this,
+          $projects = $('.jg-project'),
+          timelineOffset = -(parseInt(jg.timeline.css("margin-left")));
+
+      $projects.each(function() {
+        var $name = $(this).find(".jg-name"),
+            projWidth = $(this).width(),
+            projOffset = $(this).position().left,
+            dataWidth = projWidth - (timelineOffset - projOffset);
+
+        if(dataWidth < projWidth) {
+          $name.width(dataWidth)
+        }
+      })
+    },
+
+    setVerticalHints: function() {
+      var jg = this,
+          offsetTop = -(jg.content.position().top),
+          offsetBottom = jg.content.height() - offsetTop - jg.viewportHeight;
+
+
+      if(offsetTop > 30) {offsetTop = 30;}
+      if(offsetBottom > 30) {offsetBottom = 30;}
+
+      offsetTop = offsetTop / 10;
+      offsetBottom = offsetBottom / 10;
+
+      jg.glowTop.css({
+        boxShadow: "inset 0 "+offsetTop+"px "+(offsetTop * 3)+"px 0 rgba(0,0,0,0.3)"
+      })
+
+      jg.glowBottom.css({
+        boxShadow: "inset 0 -"+offsetBottom+"px "+(offsetBottom * 3)+"px 0 rgba(0,0,0,0.3)"
+      })
+    },
+
     createEvents: function() {
       var jg = this, options = jg.options,
           $container = jg.container;
@@ -482,59 +518,13 @@
         }
         jg.render();
       });
-      console.log("oasd")
+
       $(".jg-project").off().on("mouseenter mouseleave", function(e) {
         if(e.type === "mouseenter") {
-          $(this).find(".jg-tasks").animate({ top: 20 }, 100);
+          $(this).find(".jg-tasks").animate({ top: 19 }, 100);
         } else {
           $(this).find(".jg-tasks").animate({ top: 0 }, 100);
         }
-      })
-    },
-
-    setNamePositions: function() {
-      var jg = this,
-          $projects = $('.jg-project'),
-          offsetLeft = -(parseInt(jg.timeline.css("margin-left")));
-
-      $projects.each(function() {
-        var width = $(this).width(),
-            leftOffset = $(this).position().left,
-            rightOffset = leftOffset + width;
-
-        if(leftOffset < offsetLeft && offsetLeft < rightOffset) {
-          var $img = $(this).find(".jg-icon"),
-              $name = $(this).find(".jg-name"),
-              imageMargin = width - (rightOffset - offsetLeft),
-              textWidth = width - imageMargin - 50;
-          $img.css({
-            marginLeft: imageMargin
-          })
-          $name.css({
-            width: textWidth
-          })
-        }
-      })
-    },
-
-    setVerticalHints: function() {
-      var jg = this,
-          offsetTop = -(jg.content.position().top),
-          offsetBottom = jg.content.height() - offsetTop - jg.viewportHeight;
-
-
-      if(offsetTop > 30) {offsetTop = 30;}
-      if(offsetBottom > 30) {offsetBottom = 30;}
-
-      offsetTop = offsetTop / 10;
-      offsetBottom = offsetBottom / 10;
-
-      jg.glowTop.css({
-        boxShadow: "inset 0 "+offsetTop+"px "+(offsetTop * 3)+"px 0 rgba(0,0,0,0.3)"
-      })
-
-      jg.glowBottom.css({
-        boxShadow: "inset 0 -"+offsetBottom+"px "+(offsetBottom * 3)+"px 0 rgba(0,0,0,0.3)"
       })
     },
 

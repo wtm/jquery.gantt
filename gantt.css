@@ -37,6 +37,7 @@
 
 .jg-dates {
   background: #AAA;
+  border-bottom: 1px solid #000;
   height: 30px;
   position: relative;
   z-index: 5003;
@@ -94,11 +95,11 @@
 
 .jg-content .jg-project .jg-name {
   color: #FFF;
-  float: left;
-  margin-top: 2px;
+  float: right;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  width: 100%;
 }
 
 .jg-content .jg-project .jg-tasks {
