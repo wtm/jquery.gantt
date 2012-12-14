@@ -47,7 +47,6 @@ $(document).ready(function() {
       iconURL: "nike-swoosh.gif",
       startDate: startDate,
       endDate: endDate,
-      category: color,
       color: color,
       tasks: tasks
     }
@@ -55,12 +54,29 @@ $(document).ready(function() {
   }
   $(".container").gantt(stories);
 
+  $('.controls .views a').on("click", function(e) {
+    e.preventDefault();
+    $(".container").trigger("gantt-changeView", $(this).attr("class"));
+  });
+
+  $('.controls .modes a').on("click", function(e) {
+    e.preventDefault();
+    $(".container").trigger("gantt-collapse");
+  });
+
+  $('.controls .filters select').on("change", function(e) {
+    e.preventDefault();
+    filter = { color: $(this).val() }
+    $(".container").trigger("gantt-filterBy", filter);
+  });
+
+  $('.controls .filters a').on("click", function(e) {
+    e.preventDefault();
+    $(".container").trigger("gantt-filterBy", null);
+  });
+
   $(".toolbelt a").on("click", function() {
-    if($(this).hasClass("view")) {
-      $(".container").trigger("gantt-changeView", $(this).attr("class").split(" ")[1]);
-    } else if($(this).hasClass("collapse")) {
-      $(".container").trigger("gantt-collapse");
-    } else if($(this).hasClass("filterOn")) {
+    if($(this).hasClass("filterOn")) {
       $(".container").trigger("gantt-filterBy", { category: "red,green"});
     } else if($(this).hasClass("filterOff")) {
       $(".container").trigger("gantt-filterBy", {});

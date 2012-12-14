@@ -12,7 +12,7 @@ h1 { text-align: center; }
 
 #nav { text-align: center; }
 
-ul.description { list-style: none; padding: 0; }
+ul { list-style: none; padding: 0; }
 ul.description li { margin-bottom: 8px; }
 
 .hr {
@@ -23,14 +23,21 @@ ul.description li { margin-bottom: 8px; }
   width: 100%;
 }
 
-.toolbelt {
-  height: 50px;
-  list-style: none;
+.controls {
+  height: 150px;
+  margin: 0 auto;
+  width: 90%;
 }
 
-.toolbelt li {
+.controls > li {
+  border-right: 1px solid #DDD;
   float: left;
-  margin-right: 8px;
+  margin-right: 20px;
+  padding-right: 20px;
+}
+
+.controls li.filters select {
+  height: 80px;
 }
 
 .container {

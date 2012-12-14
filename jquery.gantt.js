@@ -173,9 +173,8 @@
         for(filter in options.filter) {
           visible = false;
           theFilter = options.filter[filter];
-          filterList = theFilter.split(",");
-          for(var j=0;j<filterList.length;j++) {
-            if(project[filter] === filterList[j]) {
+          for(var j=0;j<theFilter.length;j++) {
+            if(project[filter] === theFilter[j]) {
               visible = true;
             }
           }
