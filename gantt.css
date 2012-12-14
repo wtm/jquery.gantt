@@ -116,11 +116,11 @@
 
 .jg-content .jg-project .jg-tasks .jg-task {
   background: #FFF;
-  border-radius: 10px;
-  height: 5px;
+  border-radius: 4px;
+  height: 4px;
   position: absolute;
   top: 5px;
-  width: 5px;
+  width: 4px;
 }
 
 .jg-viewport .jg-playhead {
