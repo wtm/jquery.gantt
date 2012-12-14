@@ -5,6 +5,7 @@
         mode: "regular",
         modes: {
           regular: { scale: 2, paddingX: 2, paddingY: 1, showContent: true },
+          huge: { scale: 4, paddingX: 2, paddingY: 1, showContent: true },
           collapsed: { scale: .3, paddingX: 0, paddingY: .3, showContent: false }
         },
         position: { date: null, top: 0 },
@@ -22,11 +23,12 @@
         }
       };
 
-  function Gantt(element, projects, options) {
+  function Gantt(element, data, options) {
     var jg = this;
     jg.container = $(element);
     jg.options = $.extend({}, defaults, options);
-    jg.projects = projects;
+    jg.projects = data.projects;
+    jg.tasks = data.tasks;
     jg.init();
   }
 
@@ -132,7 +134,7 @@
       jg.view = options.views[options.view];
 
       // Calculate Dimensions
-      jg.containerWidth = $container.width();
+      jg.containerWidth = $container.width() + ((jg.view.dayOffset + 1) * jg.view.grid.x);
       jg.timelineWidth = jg.containerWidth * 3;
       jg.viewportHeight = $container.height() - jg.dates.height();
 
@@ -551,20 +553,16 @@
       });
 
       // Change the current view
-      $container.off("gantt-collapse").on("gantt-collapse", function() {
-        if(options.mode === "collapsed") {
-          options.mode = "regular";
-        } else {
-          options.mode = "collapsed";
-        }
+      $container.off("gantt-changeMode").on("gantt-changeMode", function(e, mode) {
+        options.mode = mode;
         jg.render();
       });
 
       $(".jg-project").off().on("mouseenter mouseleave", function(e) {
         if(e.type === "mouseenter") {
-          $(this).find(".jg-tasks").animate({ top: 19 }, 75);
+          $(this).find(".jg-tasks").animate({ bottom: -15 }, 75);
         } else {
-          $(this).find(".jg-tasks").animate({ top: 0 }, 50);
+          $(this).find(".jg-tasks").animate({ bottom: 0 }, 50);
         }
       })
     },
@@ -575,10 +573,10 @@
     }
   };
 
-  $.fn[pluginName] = function (projects, options) {
+  $.fn[pluginName] = function (data, options) {
     return this.each(function () {
       if(!$.data(this, "plugin_" + pluginName)) {
-        $.data(this, "plugin_" + pluginName, new Gantt(this, projects, options));
+        $.data(this, "plugin_" + pluginName, new Gantt(this, data, options));
       }
     });
   };

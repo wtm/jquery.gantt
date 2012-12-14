@@ -1,11 +1,11 @@
 $(document).ready(function() {
-  var storyCount = 300,
+  var projectCount = 300,
       colors = ["red", "green", "brown", "purple", "pink", "orange"],
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-      stories = [];
+      data = { projects: [], tasks: [] };
 
   // Create some fake data
-  for(i=0;i<storyCount;i++) {
+  for(i=0;i<projectCount;i++) {
     // Random start date
     var startYear = Math.floor(Math.random()*5) + 2009,
         startMonth = Math.floor(Math.random()*12),
@@ -40,8 +40,8 @@ $(document).ready(function() {
       tasks.push(task)
     }
 
-    // Create the actual story object
-    story = {
+    // Create the actual project object
+    project = {
       id: i,
       name: "DEMO ",
       iconURL: "nike-swoosh.gif",
@@ -50,9 +50,19 @@ $(document).ready(function() {
       color: color,
       tasks: tasks
     }
-    stories.push(story);
+    data.projects.push(project);
   }
-  $(".container").gantt(stories);
+
+  for(j=0;j<taskCount;j++) {
+    date = moment("January 1, 2009").add("days", Math.random() * 1000);
+    task = {
+      date: date.format("MMMM D, YYYY")
+    }
+    data.tasks.push(task)
+  }
+
+  console.log(data)
+  $(".container").gantt(data);
 
   $('.controls .views a').on("click", function(e) {
     e.preventDefault();
@@ -61,7 +71,7 @@ $(document).ready(function() {
 
   $('.controls .modes a').on("click", function(e) {
     e.preventDefault();
-    $(".container").trigger("gantt-collapse");
+    $(".container").trigger("gantt-changeMode", $(this).attr("class"))
   });
 
   $('.controls .filters select').on("change", function(e) {
@@ -75,13 +85,8 @@ $(document).ready(function() {
     $(".container").trigger("gantt-filterBy", null);
   });
 
-  $(".toolbelt a").on("click", function() {
-    if($(this).hasClass("filterOn")) {
-      $(".container").trigger("gantt-filterBy", { category: "red,green"});
-    } else if($(this).hasClass("filterOff")) {
-      $(".container").trigger("gantt-filterBy", {});
-    } else {
-      $(".container").trigger("gantt-moveto", null);
-    }
-  })
+  $('.controls .moveto a').on("click", function(e, date) {
+    e.preventDefault();
+    $(".container").trigger("gantt-moveto", null);
+  });
 })
