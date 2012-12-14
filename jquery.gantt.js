@@ -405,10 +405,9 @@
           var taskOffset = (gridX / 2) - 2
           // Iterate over each task
           for(j=0;j<project.tasks.length;j++) {
-            console.log("Yep")
             var task = project.tasks[j],
                 task_left = (moment(startDate).diff(task.date, "days", true) * gridX) + taskOffset;
-            elements.push('<div class="jg-task" style="left:'+task_left+'px;"></div>')
+            elements.push('<div class="jg-task" data-id="'+j+'" style="left:'+task_left+'px;"></div>')
           }
           elements.push("</div>"); // Close jg-tasks
         }
@@ -455,7 +454,7 @@
 
         var top = (taskHeight / 2) - (size / 2) - 1
 
-        elements.push('<div class="task" style="'+
+        elements.push('<div class="jg-task" style="'+
                       'left:'+el_left+'px;'+
                       'height:'+size+'px;'+
                       'width:'+size+'px;'+

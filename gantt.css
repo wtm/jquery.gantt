@@ -43,7 +43,7 @@
   z-index: 5003;
 }
 
-.jg-tasks .task {
+.jg-tasks .jg-task {
   background: #DDD;
   border: 1px solid #000;
   border-radius: 5px;
@@ -106,6 +106,7 @@
 }
 
 .jg-content .jg-project .jg-icon {
+  background: #FFF;
   float: left;
   height: 100%;
   margin-top: -3px;

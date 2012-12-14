@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  var projectCount = 500,
+  var projectCount = 800,
       colors = ["red", "green", "brown", "purple", "pink", "orange"],
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       data = { projects: [], tasks: [] };
@@ -44,17 +44,16 @@ $(document).ready(function() {
     project = {
       id: i,
       name: "DEMO ",
-      iconURL: "nike-swoosh.gif",
+      iconURL: "wtm.png",
       startDate: startDate,
       endDate: endDate,
       color: color,
       tasks: tasks
     }
-    console.log(tasks)
     data.projects.push(project);
   }
 
-  taskCount = Math.random() * 1300;
+  taskCount = (Math.random() * 500) + 1300;
   for(j=0;j<taskCount;j++) {
     date = moment("January 1, 2009").add("days", Math.random() * 1900);
     task = {
@@ -64,6 +63,10 @@ $(document).ready(function() {
   }
 
   $(".container").gantt(data);
+
+  $(".container .jg-task").on("mouseenter mouseleave", function() {
+    console.log("Task hover, the ID is:", $(this).data("id"));
+  })
 
   $('.controls .views a').on("click", function(e) {
     e.preventDefault();
