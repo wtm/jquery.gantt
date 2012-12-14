@@ -35,6 +35,23 @@
   user-select: none;
 }
 
+.jg-tasks {
+  background: #999;
+  border-bottom: 1px solid #000;
+  height: 14px;
+  position: relative;
+  z-index: 5003;
+}
+
+.jg-tasks .task {
+  background: #FFF;
+  border-radius: 5px;
+  height: 5px;
+  position: absolute;
+  top: 4px;
+  width: 5px;
+}
+
 .jg-dates {
   background: #AAA;
   border-bottom: 1px solid #000;

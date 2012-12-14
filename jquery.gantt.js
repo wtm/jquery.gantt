@@ -37,14 +37,16 @@
       var jg = this;
 
       // Initial calculations
-      jg.parseProjects();
+      jg.parseData();
       jg.createUI();
       jg.render();
     },
 
-    parseProjects: function() {
+    parseData: function() {
       var projects = this.projects,
-          project = null;
+          tasks = this.tasks,
+          project = null,
+          task = null;
 
       // Go over each project
       for(i=0;i<projects.length;i++) {
@@ -63,6 +65,21 @@
       projects.sort(function(a,b) {
         return a.startDate - b.startDate;
       });
+
+      // Go over each task
+      for(i=0;i<tasks.length;i++) {
+        task = tasks[i];
+
+        // Convert to Unix time.
+        if(isNaN(task.date)) {
+          task.date = moment(task.date).unix();
+        }
+      }
+
+      // Sort them by their start time / ID
+      tasks.sort(function(a,b) {
+        return a.date - b.date;
+      });
     },
 
     createUI: function() {
@@ -73,6 +90,7 @@
           elements = '<div class="jg-viewport">' +
                         '<div class="jg-timeline">' +
                           '<div class="jg-dates"></div>' +
+                          '<div class="jg-tasks"></div>' +
                           '<div class="jg-content-wrap">' +
                             '<div class="jg-glow-top"></div>' +
                             '<div class="jg-content"></div>' +
@@ -90,6 +108,7 @@
       jg.glowTop = $container.find(".jg-glow-top");
       jg.glowBottom = $container.find(".jg-glow-bottom");
       jg.content = $container.find(".jg-content");
+      jg.tasksContent = $container.find(".jg-tasks");
       jg.dates = $container.find(".jg-dates");
       jg.grid = $container.find(".jg-grid");
       jg.playhead = $container.find(".jg-playhead");
@@ -122,6 +141,7 @@
 
       jg.content.empty();
       jg.dates.empty();
+      jg.tasksContent.empty();
     },
 
     setGlobals: function() {
@@ -157,7 +177,8 @@
       // Static
       var jg = this, options = jg.options,
           view = jg.view,
-          projects = jg.projects,
+          projects = jg.projects, project,
+          tasks = jg.tasks, task,
 
           // Calculated
           preloadDays = (view.preloadDays * 24*60*60), // Load extra days
@@ -167,8 +188,8 @@
       // Determine the projects within our timeframe
       jg.activeProjects = [];
       for(i=0;i<projects.length;i++) {
-        var project = projects[i],
-            isBetweenStart = jg.isBetween(timelineStart,project.startDate,timelineEnd),
+        project = projects[i];
+        var isBetweenStart = jg.isBetween(timelineStart,project.startDate,timelineEnd),
             isBetweenEnd = jg.isBetween(timelineStart,project.endDate,timelineEnd),
             visible = true;
 
@@ -184,6 +205,15 @@
 
         if((isBetweenStart || isBetweenEnd) && visible) {
           jg.activeProjects.push(project);
+        }
+      }
+
+      jg.activeTasks = [];
+      for(i=0;i<tasks.length;i++) {
+        task = tasks[i];
+
+        if(jg.isBetween(timelineStart,task.date,timelineEnd)) {
+          jg.activeTasks.push(task);
         }
       }
     },
@@ -285,6 +315,7 @@
           gridX = view.grid.x,
           gridY = view.grid.y,
           projects = jg.activeProjects,
+          tasks = jg.activeTasks,
           elements = [],
 
           // Calculated
@@ -395,6 +426,22 @@
 
       // Append the elements
       jg.content.append(elements.join('')).css({ height: content_height });
+
+      // TASKS
+      elements = [];
+      console.log(tasks, "!")
+      for(var i=0;i<tasks.length;i++) {
+        var task = tasks[i],
+            date = moment.unix(task.date),
+            daysSinceStart = date.diff(jg.startMoment, "days"),
+            el_left = daysSinceStart * gridX;
+            console.log(daysSinceStart, "blah")
+        console.log(task.date)
+        elements.push('<div class="task" style="'+
+                      'left:'+el_left+'px'+
+                      '"></div>');
+      }
+      jg.tasksContent.append(elements.join(''));
     },
 
     dragInit: function() {
