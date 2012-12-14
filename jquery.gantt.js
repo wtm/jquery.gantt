@@ -338,6 +338,7 @@
                   'height:'+el_height+'px;'+
                   'left:'+el_left+'px;'+
                   'top: '+el_top+'px;'+
+                  'z-index:'+(1000 - row)+';'+
                   'width:'+el_width+'px;">'+
                   '<div class="jg-data" style="background:'+project.color+';">');
 
@@ -542,9 +543,9 @@
 
       $(".jg-project").off().on("mouseenter mouseleave", function(e) {
         if(e.type === "mouseenter") {
-          $(this).find(".jg-tasks").animate({ top: 19 }, 100);
+          $(this).find(".jg-tasks").animate({ top: 19 }, 75);
         } else {
-          $(this).find(".jg-tasks").animate({ top: 0 }, 100);
+          $(this).find(".jg-tasks").animate({ top: 0 }, 50);
         }
       })
     },
