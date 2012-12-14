@@ -21,16 +21,34 @@
     </div>
     <div class="hr"></div>
 
-    <ul class="toolbelt">
-      <li>View by:</li>
-      <li><a href="#" class="view year">Year</a></li>
-      <li><a href="#" class="view month">Month</a></li>
-      <li><a href="#" class="view week">Week</a></li>
-      <li>Other:</li>
-      <li><a href="#" class="collapse">Collapse Toggle</a></li>
-      <li><a href="#" class="today">Jump to Today</a></li>
-      <li><a href="#" class="filterOn">Filter only red and green</a></li>
-      <li><a href="#" class="filterOff">No filter</a></li>
+    <ul class="controls">
+      <li class="views">
+        <h3>Views:</h3>
+        <ul>
+          <li><a href="#" class="year">Year</a></li>
+          <li><a href="#" class="month">Month</a></li>
+          <li><a href="#" class="week">Week</a></li>
+        </ul>
+      </li>
+      <li class="modes">
+        <h3>Modes:</h3>
+        <ul>
+          <li><a href="#" class="collapse">Normal</a></li>
+          <li><a href="#" class="collapse">Collapsed</a></li>
+        </ul>
+      </li>
+      <li class="filters">
+        <h3>Filters:</h3>
+        <select multiple>
+          <option value="red">red</option>
+          <option value="green">green</option>
+          <option value="purple">purple</option>
+          <option value="orange">orange</option>
+          <option value="brown">brown</option>
+        </select>
+        <a href="#" class="clear">Clear</a>
+      </li>
+      <li class="others"><h3>Others:</h3></li>
     </ul>
 
     <div class="container"></div>
