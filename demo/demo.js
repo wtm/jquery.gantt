@@ -28,6 +28,7 @@ $(document).ready(function() {
         // Create some tasks
         days = moment(startDate).diff(moment(endDate), "days"),
         taskCount = Math.floor(Math.random() * 30),
+        color = colors[Math.floor(Math.random()*colors.length)],
         tasks = [],
         date = null;
 
@@ -46,7 +47,8 @@ $(document).ready(function() {
       iconURL: "nike-swoosh.gif",
       startDate: startDate,
       endDate: endDate,
-      color: colors[Math.floor(Math.random()*colors.length)],
+      category: color,
+      color: color,
       tasks: tasks
     }
     stories.push(story);

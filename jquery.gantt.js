@@ -1,6 +1,7 @@
 ;(function($, window, document, undefined) {
   var pluginName = "gantt",
       defaults = {
+        filter: { category: "green,red"},
         mode: "regular",
         modes: {
           regular: { scale: 2, paddingX: 2, paddingY: 1, showContent: true },
@@ -166,8 +167,20 @@
       for(i=0;i<projects.length;i++) {
         var project = projects[i],
             isBetweenStart = jg.isBetween(timelineStart,project.startDate,timelineEnd),
-            isBetweenEnd = jg.isBetween(timelineStart,project.endDate,timelineEnd);
-        if(isBetweenStart || isBetweenEnd) {
+            isBetweenEnd = jg.isBetween(timelineStart,project.endDate,timelineEnd),
+            visible = false;
+
+        for(filter in options.filter) {
+          theFilter = options.filter[filter];
+          filterList = theFilter.split(",");
+          for(var j=0;j<filterList.length;j++) {
+            if(project[filter] === filterList[j]) {
+              visible = true;
+            }
+          }
+        }
+
+        if((isBetweenStart || isBetweenEnd) && visible) {
           jg.activeProjects.push(project);
         }
       }
@@ -528,6 +541,12 @@
       // Change the current view
       $container.off("gantt-changeView").on("gantt-changeView", function(e, view) {
         options.view = view;
+        jg.render();
+      });
+
+      // Change the current filter
+      $container.off("gantt-filterBy").on("gantt-filterBy", function(e, filter) {
+        options.filter = { category: "green, red" }
         jg.render();
       });
 
