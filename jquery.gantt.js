@@ -1,7 +1,7 @@
 ;(function($, window, document, undefined) {
   var pluginName = "gantt",
       defaults = {
-        filter: { category: "green,red"},
+        filter: {},
         mode: "regular",
         modes: {
           regular: { scale: 2, paddingX: 2, paddingY: 1, showContent: true },
@@ -168,9 +168,10 @@
         var project = projects[i],
             isBetweenStart = jg.isBetween(timelineStart,project.startDate,timelineEnd),
             isBetweenEnd = jg.isBetween(timelineStart,project.endDate,timelineEnd),
-            visible = false;
+            visible = true;
 
         for(filter in options.filter) {
+          visible = false;
           theFilter = options.filter[filter];
           filterList = theFilter.split(",");
           for(var j=0;j<filterList.length;j++) {
@@ -546,7 +547,7 @@
 
       // Change the current filter
       $container.off("gantt-filterBy").on("gantt-filterBy", function(e, filter) {
-        options.filter = { category: "green, red" }
+        options.filter = filter;
         jg.render();
       });
 

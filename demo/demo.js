@@ -60,6 +60,10 @@ $(document).ready(function() {
       $(".container").trigger("gantt-changeView", $(this).attr("class").split(" ")[1]);
     } else if($(this).hasClass("collapse")) {
       $(".container").trigger("gantt-collapse");
+    } else if($(this).hasClass("filterOn")) {
+      $(".container").trigger("gantt-filterBy", { category: "red,green"});
+    } else if($(this).hasClass("filterOff")) {
+      $(".container").trigger("gantt-filterBy", {});
     } else {
       $(".container").trigger("gantt-moveto", null);
     }
