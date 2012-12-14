@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  var storyCount = 500,
+  var storyCount = 300,
       colors = ["red", "green", "brown", "purple", "pink", "orange"],
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       stories = [];
@@ -28,6 +28,7 @@ $(document).ready(function() {
         // Create some tasks
         days = moment(startDate).diff(moment(endDate), "days"),
         taskCount = Math.floor(Math.random() * 30),
+        color = colors[Math.floor(Math.random()*colors.length)],
         tasks = [],
         date = null;
 
@@ -43,10 +44,11 @@ $(document).ready(function() {
     story = {
       id: i,
       name: "DEMO ",
-      iconURL: "images/nike-swoosh.gif",
+      iconURL: "nike-swoosh.gif",
       startDate: startDate,
       endDate: endDate,
-      color: colors[Math.floor(Math.random()*colors.length)],
+      category: color,
+      color: color,
       tasks: tasks
     }
     stories.push(story);
@@ -58,6 +60,10 @@ $(document).ready(function() {
       $(".container").trigger("gantt-changeView", $(this).attr("class").split(" ")[1]);
     } else if($(this).hasClass("collapse")) {
       $(".container").trigger("gantt-collapse");
+    } else if($(this).hasClass("filterOn")) {
+      $(".container").trigger("gantt-filterBy", { category: "red,green"});
+    } else if($(this).hasClass("filterOff")) {
+      $(".container").trigger("gantt-filterBy", {});
     } else {
       $(".container").trigger("gantt-moveto", null);
     }
