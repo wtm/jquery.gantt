@@ -7,10 +7,20 @@
   cursor: move;
 }
 
-.jg-glow {
+.jg-glow-top {
+  height: 10px;
   margin-left: -25%;
+  pointer-events: none;
   position: absolute;
-  top: 30px;
+  width: 150%;
+  z-index: 6000;
+}
+
+.jg-glow-bottom {
+  height: 10px;
+  margin-left: -25%;
+  pointer-events: none;
+  position: absolute;
   width: 150%;
   z-index: 6000;
 }
@@ -25,33 +35,20 @@
   user-select: none;
 }
 
-.jg-loader {
-  background: url('ajax-loader.gif');
-  box-shadow: 0 0 20px #000;
-  display: none;
-  height: 19px;
-  left: 50%;
-  margin-left: -110px;
-  margin-top: -9px;
-  position: absolute;
-  top: 50%;
-  width: 220px;
-  z-index: 6000;
-}
-
-.jg-labels {
+.jg-dates {
   background: #AAA;
+  border-bottom: 1px solid #000;
   height: 30px;
   position: relative;
   z-index: 5003;
 }
 
-.jg-labels .jg-label {
+.jg-dates .jg-label {
   position: absolute;
   text-align: center;
 }
 
-.jg-labels div[class*='jg-'] {
+.jg-dates div[class*='jg-'] {
   margin: 0 auto;
 }
 
@@ -69,6 +66,10 @@
 .jg-label .jg-week {
   font-size: 12px;
   padding-top: 8px;
+}
+
+.jg-content-wrap {
+  position: relative;
 }
 
 .jg-content {
@@ -89,16 +90,19 @@
 .jg-content .jg-project .jg-icon {
   float: left;
   height: 100%;
+  margin-top: -3px;
   margin-right: 8px;
 }
 
 .jg-content .jg-project .jg-name {
   color: #FFF;
-  float: left;
-  margin-top: 2px;
+  float: right;
+  height: 100%;
+  padding-top: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  width: 100%;
 }
 
 .jg-content .jg-project .jg-tasks {
@@ -112,11 +116,11 @@
 
 .jg-content .jg-project .jg-tasks .jg-task {
   background: #FFF;
-  border-radius: 10px;
-  height: 5px;
+  border-radius: 4px;
+  height: 4px;
   position: absolute;
   top: 5px;
-  width: 5px;
+  width: 4px;
 }
 
 .jg-viewport .jg-playhead {
