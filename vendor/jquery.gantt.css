@@ -35,6 +35,24 @@
   user-select: none;
 }
 
+.jg-tasks {
+  background: #444;
+  border-bottom: 1px solid #000;
+  height: 20px;
+  position: relative;
+  z-index: 5003;
+}
+
+.jg-tasks .task {
+  background: #DDD;
+  border: 1px solid #000;
+  border-radius: 5px;
+  height: 5px;
+  position: absolute;
+  top: 4px;
+  width: 5px;
+}
+
 .jg-dates {
   background: #AAA;
   border-bottom: 1px solid #000;
@@ -105,8 +123,13 @@
   width: 100%;
 }
 
+.jg-content .jg-project .jg-name span {
+  color: #333;
+  padding-left: 10px;
+}
+
 .jg-content .jg-project .jg-tasks {
-  background: black;
+  background: #333;
   bottom: 0px;
   height: 80%;
   position: absolute;
@@ -117,19 +140,19 @@
 .jg-content .jg-project .jg-tasks .jg-task {
   background: #FFF;
   border-radius: 4px;
-  height: 4px;
+  min-height: 4px;
+  min-width: 4px;
   position: absolute;
-  top: 5px;
-  width: 4px;
+  top: 6px;
 }
 
 .jg-viewport .jg-playhead {
   background: blue;
-  height: 300px;
+  height: 350px;
   left: 80px;
   opacity: 0.4;
   position: absolute;
-  top: 30px;
+  top: 52px;
   width: 3px;
   z-index: 1;
 }
