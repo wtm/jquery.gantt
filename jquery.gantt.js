@@ -11,13 +11,13 @@
         views: {
           week: {
             grid: { color: "#DDD", x: 150, y: 10 },
-            format: "MMM DD", labelEvery: "day", preloadDays: 200, dayOffset: 1, highlightDays: 7 },
+            format: "MMM DD", labelEvery: "day", preloadDays: 30, dayOffset: 1, highlightDays: 7 },
           month: {
             grid: { color: "#DDD", x: 42, y: 10 },
-            format: "MMM DD", labelEvery: "day", preloadDays: 150, dayOffset: 3, highlightDays: 10 },
+            format: "MMM DD", labelEvery: "day", preloadDays: 30, dayOffset: 3, highlightDays: 10 },
           year: {
             grid: { color: "#DDD", x: 13, y: 10 },
-            format: "MMM", labelEvery: "month", preloadDays: 100, dayOffset: 5, highlightDays: 10 }
+            format: "MMM", labelEvery: "month", preloadDays: 30, dayOffset: 5, highlightDays: 10 }
         }
       };
 
@@ -97,6 +97,7 @@
     render: function() {
       var jg = this;
 
+      console.time("render time")
       jg.clearUI();
       jg.setGlobals(); // Global variables that get calculated a lot
       jg.setActiveProjects(); // Only get the projects in the current timeframe
@@ -107,11 +108,10 @@
       jg.drawLabels(); // Draw the grid background
       jg.createElements(); // Loop through the projects and create elements
       jg.dragInit(); // Loop through the projects and create elements
-      console.time("set name and vertical time")
       jg.setNamePositions();
-      console.timeEnd("set name and vertical time")
       jg.setVerticalHints();
       jg.createEvents();
+      console.timeEnd("render time")
     },
 
     clearUI: function() {
@@ -448,7 +448,7 @@
           var curDayOffset = Math.round(($timeline.position().left - jg.dayOffset) / gridX);
           curMoment = moment(jg.startMoment).subtract("days", curDayOffset);
 
-          if(curMoment.format("MM DD") != startMoment.format("MM DD")) {
+          if(moment(curMoment).subtract("days", jg.view.dayOffset).format("MM DD") != startMoment.format("MM DD")) {
             // Set the new day as the current moment
             options.position.date = curMoment;
             options.position.top = jg.content.position().top;
@@ -470,10 +470,10 @@
           var $project = $($projects[i]),
               projOffset = $project.position().left;
 
-          if(projOffset < timelineOffset + 100) {
+          if(projOffset < timelineOffset + 500) {
             var projWidth = $project.width();
 
-            if(projOffset + projWidth > timelineOffset - 100) {
+            if(projOffset + projWidth > timelineOffset - 500) {
               var $name = $project.find(".jg-name"),
                   dataWidth = projWidth - (timelineOffset - projOffset);
 
@@ -485,7 +485,6 @@
             }
             complete = true;
           } else if(complete) {
-            console.log(i, $projects.length)
             return false;
           }
         }
@@ -495,21 +494,22 @@
     setVerticalHints: function() {
       var jg = this,
           offsetTop = -(jg.content.position().top),
-          offsetBottom = jg.content.height() - offsetTop - jg.viewportHeight;
+          offsetBottom = jg.content.height() - offsetTop - jg.viewportHeight,
+          glowHeight = 100;
 
 
-      if(offsetTop > 30) {offsetTop = 30;}
-      if(offsetBottom > 30) {offsetBottom = 30;}
+      if(offsetTop > glowHeight) {offsetTop = glowHeight;}
+      if(offsetBottom > glowHeight) {offsetBottom = glowHeight;}
 
-      offsetTop = offsetTop / 10;
-      offsetBottom = offsetBottom / 10;
+      offsetTop = offsetTop / 20;
+      offsetBottom = offsetBottom / 20;
 
       jg.glowTop.css({
-        boxShadow: "inset 0 "+offsetTop+"px "+(offsetTop * 3)+"px 0 rgba(0,0,0,0.3)"
+        boxShadow: "inset 0 "+offsetTop+"px "+(offsetTop * 1.5)+"px 0 rgba(0,0,0,0.35)"
       })
 
       jg.glowBottom.css({
-        boxShadow: "inset 0 -"+offsetBottom+"px "+(offsetBottom * 3)+"px 0 rgba(0,0,0,0.3)"
+        boxShadow: "inset 0 -"+offsetBottom+"px "+(offsetBottom * 1.5)+"px 0 rgba(0,0,0,0.35)"
       })
     },
 

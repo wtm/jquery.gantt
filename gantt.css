@@ -90,6 +90,7 @@
 .jg-content .jg-project .jg-icon {
   float: left;
   height: 100%;
+  margin-top: -3px;
   margin-right: 8px;
 }
 
@@ -97,6 +98,7 @@
   color: #FFF;
   float: right;
   height: 100%;
+  padding-top: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
