@@ -393,7 +393,9 @@
           // The image and name
           elements.push('<div class="jg-name">'+
                       '<img class="jg-icon" src="'+project.iconURL+'" />'+
-                      project.name + '</div>');
+                      project.name +
+                      '<span>'+startDate.format("MMMM D")+' - '+endDate.format("MMMM D")+'</span>'+
+                      '</div>');
         }
         elements.push('</div>'); // Close jg-data
 

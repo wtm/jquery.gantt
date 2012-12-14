@@ -122,6 +122,11 @@
   width: 100%;
 }
 
+.jg-content .jg-project .jg-name span {
+  color: #333;
+  padding-left: 10px;
+}
+
 .jg-content .jg-project .jg-tasks {
   background: black;
   bottom: 0px;
