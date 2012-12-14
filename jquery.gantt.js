@@ -156,7 +156,7 @@
       // Calculate Dimensions
       jg.containerWidth = $container.width() + ((jg.view.dayOffset + 1) * jg.view.grid.x);
       jg.timelineWidth = jg.containerWidth * 3;
-      jg.viewportHeight = $container.height() - jg.dates.height();
+      jg.viewportHeight = $container.height() - jg.dates.height() - jg.tasksContent.height();
 
       // Calculate Timeframes
       var date = options.position.date,
@@ -394,8 +394,8 @@
           elements.push('<div class="jg-name">'+
                       '<img class="jg-icon" src="'+project.iconURL+'" />'+
                       project.name +
-                      '<span>'+startDate.format("MMMM D")+' - '+endDate.format("MMMM D")+'</span>'+
-                      '</div>');
+                      '<span>'+startDate.format("MMMM D")+' - '
+                      +endDate.format("MMMM D")+'</span></div>');
         }
         elements.push('</div>'); // Close jg-data
 
@@ -431,14 +431,11 @@
 
       // TASKS
       elements = [];
-      console.log(tasks, "!")
       for(var i=0;i<tasks.length;i++) {
         var task = tasks[i],
             date = moment.unix(task.date),
             daysSinceStart = date.diff(jg.startMoment, "days"),
             el_left = daysSinceStart * gridX;
-            console.log(daysSinceStart, "blah")
-        console.log(task.date)
         elements.push('<div class="task" style="'+
                       'left:'+el_left+'px'+
                       '"></div>');
@@ -561,21 +558,21 @@
       var jg = this,
           offsetTop = -(jg.content.position().top),
           offsetBottom = jg.content.height() - offsetTop - jg.viewportHeight,
-          glowHeight = 100;
+          glowHeight = 40;
 
 
       if(offsetTop > glowHeight) {offsetTop = glowHeight;}
       if(offsetBottom > glowHeight) {offsetBottom = glowHeight;}
 
-      offsetTop = offsetTop / 20;
-      offsetBottom = offsetBottom / 20;
+      offsetTop = offsetTop / 10;
+      offsetBottom = offsetBottom / 10;
 
       jg.glowTop.css({
-        boxShadow: "inset 0 "+offsetTop+"px "+(offsetTop * 1.5)+"px 0 rgba(0,0,0,0.35)"
+        boxShadow: "inset 0 "+offsetTop+"px "+(offsetTop * 2)+"px 0 rgba(0,0,0,0.45)"
       })
 
       jg.glowBottom.css({
-        boxShadow: "inset 0 -"+offsetBottom+"px "+(offsetBottom * 1.5)+"px 0 rgba(0,0,0,0.35)"
+        boxShadow: "inset 0 -"+offsetBottom+"px "+(offsetBottom * 2)+"px 0 rgba(0,0,0,0.45)"
       })
     },
 

@@ -53,16 +53,15 @@ $(document).ready(function() {
     data.projects.push(project);
   }
 
-  taskCount = Math.random() * 100;
+  taskCount = Math.random() * 300;
   for(j=0;j<taskCount;j++) {
-    date = moment("January 1, 2010").add("days", Math.random() * 1000);
+    date = moment("January 1, 2009").add("days", Math.random() * 1900);
     task = {
       date: date.format("MMMM D, YYYY")
     }
     data.tasks.push(task)
   }
 
-  console.log(data)
   $(".container").gantt(data);
 
   $('.controls .views a').on("click", function(e) {
