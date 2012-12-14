@@ -391,11 +391,12 @@
         // If the project content is visible
         if(mode.showContent) {
           // The image and name
-          elements.push('<div class="jg-name">'+
-                      '<img class="jg-icon" src="'+project.iconURL+'" />'+
-                      project.name +
-                      '<span>'+startDate.format("MMMM D")+' - '
-                      +endDate.format("MMMM D")+'</span></div>');
+          elements.push('<div class="jg-name">')
+          if(project.iconURL) {
+            elements.push('<img class="jg-icon" src="'+project.iconURL+'" />')
+          }
+          elements.push(project.name + '<span>'+startDate.format("MMMM D") +
+                        ' - ' + endDate.format("MMMM D")+'</span></div>');
         }
         elements.push('</div>'); // Close jg-data
 
@@ -404,6 +405,7 @@
           var taskOffset = (gridX / 2) - 2
           // Iterate over each task
           for(j=0;j<project.tasks.length;j++) {
+            console.log("Yep")
             var task = project.tasks[j],
                 task_left = (moment(startDate).diff(task.date, "days", true) * gridX) + taskOffset;
             elements.push('<div class="jg-task" style="left:'+task_left+'px;"></div>')
@@ -431,13 +433,34 @@
 
       // TASKS
       elements = [];
+      taskHeight = jg.tasksContent.height();
       for(var i=0;i<tasks.length;i++) {
         var task = tasks[i],
+            size = 4,
             date = moment.unix(task.date),
             daysSinceStart = date.diff(jg.startMoment, "days"),
             el_left = daysSinceStart * gridX;
+
+        for(var j=i+1;j<tasks.length;j++) {
+          nextTask = tasks[j];
+          if(nextTask.date === task.date) {
+            if(size + 4 < taskHeight) {
+              size += 4;
+            }
+            i = j;
+          } else {
+            break;
+          }
+        }
+
+        var top = (taskHeight / 2) - (size / 2) - 1
+
         elements.push('<div class="task" style="'+
-                      'left:'+el_left+'px'+
+                      'left:'+el_left+'px;'+
+                      'height:'+size+'px;'+
+                      'width:'+size+'px;'+
+                      'border-radius:'+size+'px;'+
+                      'top:'+top+'px;'+
                       '"></div>');
       }
       jg.tasksContent.append(elements.join(''));

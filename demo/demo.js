@@ -50,10 +50,11 @@ $(document).ready(function() {
       color: color,
       tasks: tasks
     }
+    console.log(tasks)
     data.projects.push(project);
   }
 
-  taskCount = Math.random() * 300;
+  taskCount = Math.random() * 1300;
   for(j=0;j<taskCount;j++) {
     date = moment("January 1, 2009").add("days", Math.random() * 1900);
     task = {
