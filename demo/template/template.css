@@ -33,6 +33,10 @@ header .wtm-logo {
   top: 0;
 }
 
+header h1 a {
+  text-decoration: none;
+}
+
 ul { list-style: none; padding: 0; }
 
 .description ul li {
