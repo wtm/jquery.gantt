@@ -5,7 +5,7 @@
         mode: "regular",
         modes: {
           regular: { scale: 2, paddingX: 2, paddingY: 1, showContent: true },
-          huge: { scale: 4, paddingX: 2, paddingY: 1, showContent: true },
+          large: { scale: 4, paddingX: 2, paddingY: 1, showContent: true },
           collapsed: { scale: .3, paddingX: 0, paddingY: .3, showContent: false }
         },
         position: { date: null, top: 0 },
