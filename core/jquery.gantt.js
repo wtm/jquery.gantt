@@ -93,16 +93,16 @@
           // Create all of the elements
           elements = '<div class="jg-viewport">' +
                         '<div class="jg-timeline">' +
-                          '<div class="jg-dates"></div>' +
-                          '<div class="jg-tasks"></div>' +
+                          '<div class="jg-header-dates"></div>' +
+                          '<div class="jg-header-tasks"></div>' +
                           '<div class="jg-content-wrap">' +
-                            '<div class="jg-glow-top"></div>' +
+                            '<div class="jg-glow"></div>' +
                             '<div class="jg-content"></div>' +
-                            '<div class="jg-glow-bottom"></div>' +
+                            '<div class="jg-glow"></div>' +
                           '</div>' +
                         '</div>' +
+                        '<div class="jg-scrub"><div class="jg-inner"></div></div>' +
                         '<div class="jg-scrub-timeframe"></div>' +
-                        '<div class="jg-scrub"><div class="jg-scrub-inner"></div></div>' +
                         '<canvas class="jg-grid"></canvas>' +
                       '</div>';
 
@@ -111,12 +111,12 @@
       // Create jQuery elements
       $elements.viewport = $container.find(".jg-viewport");
       $elements.timeline = $container.find(".jg-timeline");
-      $elements.dates = $container.find(".jg-dates");
-      $elements.tasks = $container.find(".jg-tasks");
+      $elements.dates = $container.find(".jg-header-dates");
+      $elements.tasks = $container.find(".jg-header-tasks");
       $elements.contentWrap = $container.find(".jg-content-wrap");
-      $elements.glowTop = $container.find(".jg-glow-top");
+      $elements.glowTop = $container.find(".jg-glow").first();
       $elements.content = $container.find(".jg-content");
-      $elements.glowBottom = $container.find(".jg-glow-bottom");
+      $elements.glowBottom = $container.find(".jg-glow").last();
       $elements.scrubTimeframe = $container.find(".jg-scrub-timeframe");
       $elements.scrub = $container.find(".jg-scrub");
       $elements.grid = $container.find(".jg-grid");
@@ -401,7 +401,7 @@
                   'height:'+el_height+'px;'+
                   'left:'+el_left+'px;'+
                   'top: '+el_top+'px;'+
-                  'z-index:'+(1000 - row)+';'+
+                  'z-index:'+(499 - row)+';'+
                   'width:'+el_width+'px;">'+
                   '<div class="jg-data" style="background:'+project.color+';">');
 
@@ -412,8 +412,8 @@
           if(project.iconURL) {
             elements.push('<img class="jg-icon" src="'+project.iconURL+'" />');
           }
-          elements.push(project.name + '<span>'+startDate.format("MMMM D") +
-                        ' - ' + endDate.format("MMMM D")+'</span></div>');
+          elements.push(project.name + '<div class="jg-date">'+startDate.format("MMMM D") +
+                        ' - ' + endDate.format("MMMM D")+'</div></div>');
         }
         elements.push('</div>'); // Close jg-data
 
@@ -655,7 +655,6 @@
                       'left:'+task_left+'px;'+
                       'height:'+size+'px;'+
                       'width:'+size+'px;'+
-                      'border-radius:'+size+'px;'+
                       'top:'+task_top+'px;'+
                       '"></div>');
       }
