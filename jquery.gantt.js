@@ -13,13 +13,13 @@
         views: {
           week: {
             grid: { color: "#DDD", x: 150, y: 10 },
-            format: "MMM DD", labelEvery: "day", preloadDays: 30, dayOffset: 1, highlightDays: 7 },
+            format: "MMM DD", labelEvery: "day", preloadDays: 60, dayOffset: 1, highlightDays: 7 },
           month: {
             grid: { color: "#DDD", x: 42, y: 10 },
             format: "MMM DD", labelEvery: "day", preloadDays: 30, dayOffset: 3, highlightDays: 10 },
           year: {
             grid: { color: "#DDD", x: 13, y: 10 },
-            format: "MMM", labelEvery: "month", preloadDays: 30, dayOffset: 5, highlightDays: 10 }
+            format: "MMM", labelEvery: "month", preloadDays: 0, dayOffset: 5, highlightDays: 10 }
         }
       };
 
@@ -27,8 +27,7 @@
     var jg = this;
     jg.container = $(element);
     jg.options = $.extend({}, defaults, options);
-    jg.projects = data.projects;
-    jg.tasks = data.tasks;
+    jg.data = data;
     jg.init();
   }
 
@@ -43,13 +42,13 @@
     },
 
     parseData: function() {
-      var projects = this.projects,
-          tasks = this.tasks,
-          project = null,
-          task = null;
+      var jg = this,
+          projects = jg.data.projects,
+          tasks = jg.data.tasks,
+          project, task;
 
-      // Go over each project
-      for(i=0;i<projects.length;i++) {
+      // Go over each Project
+      for(var i=0;i<projects.length;i++) {
         project = projects[i];
 
         // Convert to Unix time.
@@ -58,16 +57,22 @@
           project.endDate = moment(project.endDate).unix();
         }
 
+        // Convert tasks to unix
+        for(var j=0;j<project.tasks.length;j++) {
+          task = project.tasks[j];
+          if(isNaN(task.date)) {
+            task.date = moment(task.date).unix();
+          }
+        }
+
+        // Required default data
         project.ganttRow = 0;
       }
+      // Sort Projects by start date
+      projects.sort(function(a,b) { return a.startDate - b.startDate; });
 
-      // Sort them by their start time / ID
-      projects.sort(function(a,b) {
-        return a.startDate - b.startDate;
-      });
-
-      // Go over each task
-      for(i=0;i<tasks.length;i++) {
+      // Go over each Task
+      for(var i=0;i<tasks.length;i++) {
         task = tasks[i];
 
         // Convert to Unix time.
@@ -76,15 +81,14 @@
         }
       }
 
-      // Sort them by their start time / ID
-      tasks.sort(function(a,b) {
-        return a.date - b.date;
-      });
+      // Sort Tasks by start date
+      tasks.sort(function(a,b) { return a.date - b.date; });
     },
 
     createUI: function() {
       var jg = this,
           $container = jg.container,
+          $elements = jg.elements = {},
 
           // Create all of the elements
           elements = '<div class="jg-viewport">' +
@@ -97,35 +101,36 @@
                             '<div class="jg-glow-bottom"></div>' +
                           '</div>' +
                         '</div>' +
-                        '<div class="jg-playhead"></div>' +
+                        '<div class="jg-scrub-timeframe"></div>' +
+                        '<div class="jg-scrub"><div class="jg-scrub-inner"></div></div>' +
                         '<canvas class="jg-grid"></canvas>' +
                       '</div>';
 
       $container.empty().append(elements);
 
       // Create jQuery elements
-      jg.contentWrap = $container.find(".jg-content-wrap");
-      jg.glowTop = $container.find(".jg-glow-top");
-      jg.glowBottom = $container.find(".jg-glow-bottom");
-      jg.content = $container.find(".jg-content");
-      jg.tasksContent = $container.find(".jg-tasks");
-      jg.dates = $container.find(".jg-dates");
-      jg.grid = $container.find(".jg-grid");
-      jg.playhead = $container.find(".jg-playhead");
-      jg.timeline = $container.find(".jg-timeline");
-      jg.viewport = $container.find(".jg-viewport");
+      $elements.viewport = $container.find(".jg-viewport");
+      $elements.timeline = $container.find(".jg-timeline");
+      $elements.dates = $container.find(".jg-dates");
+      $elements.tasks = $container.find(".jg-tasks");
+      $elements.contentWrap = $container.find(".jg-content-wrap");
+      $elements.glowTop = $container.find(".jg-glow-top");
+      $elements.content = $container.find(".jg-content");
+      $elements.glowBottom = $container.find(".jg-glow-bottom");
+      $elements.scrubTimeframe = $container.find(".jg-scrub-timeframe");
+      $elements.scrub = $container.find(".jg-scrub");
+      $elements.grid = $container.find(".jg-grid");
     },
 
     render: function() {
       var jg = this;
 
       console.time("render time")
-      jg.clearUI();
+      jg.clearUI(); // Remove old elements
       jg.setGlobals(); // Global variables that get calculated a lot
       jg.setActiveProjects(); // Only get the projects in the current timeframe
-      jg.drawGrid();
+      jg.drawGrid(); // Draw the tiled grid background
 
-      // Physical Application
       jg.setPosition(); // Determine the current visual position in time
       jg.drawLabels(); // Draw the grid background
       jg.createElements(); // Loop through the projects and create elements
@@ -137,65 +142,67 @@
     },
 
     clearUI: function() {
-      var jg = this;
+      var $elements = this.elements;
 
-      jg.content.empty();
-      jg.dates.empty();
-      jg.tasksContent.empty();
+      $elements.content.empty();
+      $elements.dates.empty();
+      $elements.tasks.empty();
     },
 
     setGlobals: function() {
       var jg = this,
           options = jg.options,
+          $elements = jg.elements,
           $container = jg.container;
 
       // Common Objects
       jg.mode = options.modes[options.mode];
       jg.view = options.views[options.view];
 
+      var gridX = jg.view.grid.x,
+          date = options.position.date;
+
       // Calculate Dimensions
-      jg.containerWidth = $container.width() + ((jg.view.dayOffset + 1) * jg.view.grid.x);
+      jg.scrubOffset = (jg.view.dayOffset + 1) * gridX;
+      jg.containerWidth = $container.width() + jg.scrubOffset;
       jg.timelineWidth = jg.containerWidth * 3;
-      jg.viewportHeight = $container.height() - jg.dates.height() - jg.tasksContent.height();
+      jg.viewportHeight = $container.height() - $elements.dates.height() - $elements.tasks.height();
+      jg.glowHeight = $elements.glowBottom.height();
+      jg.tasksHeight = $elements.tasks.height();
 
       // Calculate Timeframes
-      var date = options.position.date,
-          gridX = jg.view.grid.x;
-
       jg.daysUntilCurrent = Math.floor(jg.containerWidth / gridX);
-      jg.daysInGrid = Math.floor(jg.timelineWidth / jg.view.grid.x);
+      jg.daysInGrid = Math.floor(jg.timelineWidth / gridX);
       jg.curMoment = date ? moment(date) : moment();
       jg.startMoment = moment(jg.curMoment).subtract("days", jg.daysUntilCurrent);
       jg.endMoment = moment(jg.startMoment).add("days", jg.daysInGrid);
       jg.dayOffset = jg.view.dayOffset * gridX;
-
-      // Others
-      jg.settingNamePositions = false;
     },
 
     setActiveProjects: function() {
-      // Static
-      var jg = this, options = jg.options,
+      var jg = this,
+          options = jg.options,
           view = jg.view,
-          projects = jg.projects, project,
-          tasks = jg.tasks, task,
+          projects = jg.data.projects,
+          tasks = jg.data.tasks,
 
           // Calculated
           preloadDays = (view.preloadDays * 24*60*60), // Load extra days
           timelineStart = jg.startMoment.unix() - preloadDays,
-          timelineEnd = jg.endMoment.unix() + preloadDays;
+          timelineEnd = jg.endMoment.unix() + preloadDays,
 
       // Determine the projects within our timeframe
-      jg.activeProjects = [];
-      for(i=0;i<projects.length;i++) {
-        project = projects[i];
-        var isBetweenStart = jg.isBetween(timelineStart,project.startDate,timelineEnd),
-            isBetweenEnd = jg.isBetween(timelineStart,project.endDate,timelineEnd),
-            visible = true;
+      activeProjects = jg.data.activeProjects = [];
+      for(var i=0;i<projects.length;i++) {
+        var project = projects[i],
+            isBetweenStart = jg.isBetween(timelineStart,project.startDate,timelineEnd),
+            isBetweenEnd = jg.isBetween(timelineStart,project.endDate,timelineEnd);
 
-        for(filter in options.filter) {
-          visible = false;
-          theFilter = options.filter[filter];
+        // Determine if it is filtered
+        visible = true;
+        for(var filter in options.filter) {
+          var visible = false,
+              theFilter = options.filter[filter];
           for(var j=0;j<theFilter.length;j++) {
             if(project[filter] === theFilter[j]) {
               visible = true;
@@ -203,26 +210,28 @@
           }
         }
 
-        if((isBetweenStart || isBetweenEnd) && visible) {
-          jg.activeProjects.push(project);
+        if(visible && (isBetweenStart || isBetweenEnd)) {
+          activeProjects.push(project);
         }
       }
 
-      jg.activeTasks = [];
-      for(i=0;i<tasks.length;i++) {
-        task = tasks[i];
+      activeTasks = jg.data.activeTasks = [];
+      for(var i=0;i<tasks.length;i++) {
+        var task = tasks[i];
 
         if(jg.isBetween(timelineStart,task.date,timelineEnd)) {
-          jg.activeTasks.push(task);
+          activeTasks.push(task);
         }
       }
     },
 
     drawGrid: function() {
-      var jg = this, options = this.options,
-          canvas = jg.grid[0],
+      var jg = this,
+          options = this.options,
+          $elements = jg.elements,
+          canvas = $elements.grid[0],
           ctx = canvas.getContext("2d"),
-          view = options.views[options.view],
+          view = jg.view,
           gridX = view.grid.x,
           gridY = view.grid.y;
 
@@ -240,12 +249,14 @@
 
       // Create a repeated image from canvas
       data = canvas.toDataURL("image/jpg");
-      jg.content.css({ background: "url("+data+")" });
+      $elements.content.css({ background: "url("+data+")" });
     },
 
     setPosition: function() {
       // Static
-      var jg = this, options = jg.options,
+      var jg = this,
+          options = jg.options,
+          $elements = jg.elements,
           view = jg.view,
           gridX = view.grid.x,
           offset = jg.dayOffset,
@@ -255,27 +266,31 @@
           playheadOffset = offset;
 
       // Move the timeline to the current date
-      jg.timeline.css({
+      $elements.timeline.css({
         left: contentOffset,
         width: jg.timelineWidth
       })
 
-      jg.glowBottom.css({
-       top: jg.viewportHeight - jg.glowBottom.height()
+      $elements.glowBottom.css({
+       top: jg.viewportHeight - jg.glowHeight
       })
 
-      jg.playhead.css({
+      $elements.scrub.css({
+        left: playheadOffset
+      })
+
+      $elements.scrubTimeframe.css({
         left: playheadOffset,
         width: (view.highlightDays * gridX)
       })
     },
 
     drawLabels: function() {
-      var jg = this, options = jg.options,
+      var jg = this,
+          options = jg.options,
           view = jg.view,
           gridX = view.grid.x,
-          labels = [],
-          label = null;
+          labels = [];
 
       // Iterate over each day
       for(var i=0;i<jg.daysInGrid;i++) {
@@ -297,32 +312,35 @@
 
         // Create the label
         if(format) {
-          label = '<div class="jg-label" style="left:'+(gridX * i)+'px;width:'+gridX+'px;">'+
+          var label = '<div class="jg-label" style="left:'+(gridX * i)+'px;width:'+gridX+'px;">'+
                     '<div class="jg-'+options.view+'">'+curMoment.format(format)+'</div>'+
                   '</div>';
 
           labels.push(label);
         }
       }
-      jg.dates.append(labels.join(''));
+      jg.elements.dates.append(labels.join(''));
     },
 
     createElements: function() {
       // Static
-      var jg = this, options = jg.options,
+      var jg = this,
+          options = jg.options,
+          $elements = jg.elements,
           mode = jg.mode,
           view = jg.view,
           gridX = view.grid.x,
           gridY = view.grid.y,
-          projects = jg.activeProjects,
-          tasks = jg.activeTasks,
+          projects = jg.data.activeProjects,
+          tasks = jg.data.activeTasks,
           elements = [],
 
           // Calculated
           el_height = gridY * mode.scale - 1,
           paddingY = gridY * mode.paddingY,
           paddingX = mode.paddingX * (24*60*60),
-          maxRow = 0;
+          maxRow = 0,
+          tasksLength = tasks.length;
 
       // Iterate over each project
       for(var i=0;i<projects.length;i++) {
@@ -337,7 +355,6 @@
             // Element Attributes
             el_width = daysBetween * gridX - 1,
             el_left = daysSinceStart * gridX,
-            el_top,
 
             // For determining top offset
             projectStartPad = startDate.unix() - paddingX,
@@ -366,8 +383,8 @@
 
         // Determine the correct row
         usedRows.sort(function(a,b) { return a-b });
-        for(var k=0;k<usedRows.length;k++) {
-          usedRow = usedRows[k];
+        for(var j=0;j<usedRows.length;j++) {
+          usedRow = usedRows[j];
           if(row === usedRow) {
             row++;
           }
@@ -377,7 +394,7 @@
         project.ganttRow = row;
 
         // Set the vertical offset
-        el_top = paddingY + (row * (el_height + paddingY + 1));
+        var el_top = paddingY + (row * (el_height + paddingY + 1));
 
         // Physical project element
         elements.push('<div class="jg-project" style="'+
@@ -391,9 +408,9 @@
         // If the project content is visible
         if(mode.showContent) {
           // The image and name
-          elements.push('<div class="jg-name">')
+          elements.push('<div class="jg-name">');
           if(project.iconURL) {
-            elements.push('<img class="jg-icon" src="'+project.iconURL+'" />')
+            elements.push('<img class="jg-icon" src="'+project.iconURL+'" />');
           }
           elements.push(project.name + '<span>'+startDate.format("MMMM D") +
                         ' - ' + endDate.format("MMMM D")+'</span></div>');
@@ -401,74 +418,36 @@
         elements.push('</div>'); // Close jg-data
 
         if(mode.showContent) {
+          // Create tasks
           elements.push('<div class="jg-tasks">'); // Close jg-data
-          var taskOffset = (gridX / 2) - 2
-          // Iterate over each task
-          for(j=0;j<project.tasks.length;j++) {
-            var task = project.tasks[j],
-                task_left = (moment(startDate).diff(task.date, "days", true) * gridX) + taskOffset;
-            elements.push('<div class="jg-task" data-id="'+j+'" style="left:'+task_left+'px;"></div>')
-          }
+          elements.push(jg.createTasks(project.tasks, startDate, el_height))
           elements.push("</div>"); // Close jg-tasks
         }
         elements.push("</div>"); // Close jg-project
       }
-
       // Set the content height
       maxRow += 2;
       content_height = (maxRow * gridY) + (maxRow * el_height) + gridY;
-      content_offset = -(jg.content.position().top)
+      content_offset = -($elements.content.position().top)
       if(content_height < jg.viewportHeight) {
         // If the height is smaller than the the viewport/container height
         content_height = jg.viewportHeight;
-        jg.content.animate({ top: 0 }, 100);
+        $elements.content.animate({ top: 0 }, 100);
       } else if(content_height < content_offset + jg.viewportHeight) {
         // If the height is smaller than the current Y offset
-        jg.content.animate({ top: jg.viewportHeight - content_height }, 100);
+        $elements.content.animate({ top: jg.viewportHeight - content_height }, 100);
       }
 
       // Append the elements
-      jg.content.append(elements.join('')).css({ height: content_height });
+      $elements.content.append(elements.join('')).css({ height: content_height });
 
       // TASKS
-      elements = [];
-      taskHeight = jg.tasksContent.height();
-      for(var i=0;i<tasks.length;i++) {
-        var task = tasks[i],
-            size = 4,
-            date = moment.unix(task.date),
-            daysSinceStart = date.diff(jg.startMoment, "days"),
-            el_left = daysSinceStart * gridX;
-
-        for(var j=i+1;j<tasks.length;j++) {
-          nextTask = tasks[j];
-          if(nextTask.date === task.date) {
-            if(size + 4 < taskHeight) {
-              size += 4;
-            }
-            i = j;
-          } else {
-            break;
-          }
-        }
-
-        var top = (taskHeight / 2) - (size / 2) - 1
-
-        elements.push('<div class="jg-task" style="'+
-                      'left:'+el_left+'px;'+
-                      'height:'+size+'px;'+
-                      'width:'+size+'px;'+
-                      'border-radius:'+size+'px;'+
-                      'top:'+top+'px;'+
-                      '"></div>');
-      }
-      jg.tasksContent.append(elements.join(''));
+      $elements.tasks.append(jg.createTasks(tasks, jg.startMoment, jg.tasksHeight));
     },
 
     dragInit: function() {
       var jg = this, options = jg.options,
-          $content = jg.content,
-          $timeline = jg.timeline,
+          $elements = jg.elements,
           viewportHeight = jg.viewportHeight,
           view = jg.view,
           gridX = view.grid.x,
@@ -479,7 +458,7 @@
           lockPadding = 10;
 
       // Bind the drag
-      jg.viewport.off().on("mousedown mousemove mouseup", function(e) {
+      $elements.viewport.off().on("mousedown mousemove mouseup", function(e) {
         if(e.type === "mousedown") {
           // Turn on dragging
           dragging = true;
@@ -487,16 +466,16 @@
           // Record the current positions
           mouse = {x: e.pageX, y: e.pageY}
           positions = {
-            x: $timeline.position().left,
-            y: jg.content.position().top
+            x: $elements.timeline.position().left,
+            y: $elements.content.position().top
           }
 
           // Calculate dates
-          var curDayOffset = Math.round($timeline.position().left / gridX);
+          var curDayOffset = Math.round($elements.timeline.position().left / gridX);
           startMoment = moment(jg.startMoment).subtract("days", curDayOffset);
 
           // Store heights for calculating max drag values
-          contentHeight = $content.height();
+          contentHeight = $elements.content.height();
 
         } else if(e.type === "mousemove" && dragging) {
           if(!draggingX && !draggingY) {
@@ -511,7 +490,7 @@
             if(draggingX) {
               // Move horizontally
               var left = positions.x + (e.pageX - mouse.x);
-              $timeline.css({ left: left });
+              $elements.timeline.css({ left: left });
               jg.setNamePositions();
             } else {
               // Move vertically
@@ -520,7 +499,7 @@
 
               if(marginTop > 0) { marginTop = 0; }
               if(marginTop < maxMargin) { marginTop = maxMargin; }
-              $content.css({ top: marginTop });
+              $elements.content.css({ top: marginTop });
               jg.setVerticalHints();
             }
           }
@@ -530,13 +509,13 @@
           dragging = draggingX = draggingY = false;
 
           // Calculate the currently selected day
-          var curDayOffset = Math.round(($timeline.position().left - jg.dayOffset) / gridX);
+          var curDayOffset = Math.round(($elements.timeline.position().left - jg.dayOffset) / gridX);
           curMoment = moment(jg.startMoment).subtract("days", curDayOffset);
 
           if(moment(curMoment).subtract("days", jg.view.dayOffset).format("MM DD") != startMoment.format("MM DD")) {
             // Set the new day as the current moment
             options.position.date = curMoment;
-            options.position.top = jg.content.position().top;
+            options.position.top = $elements.content.position().top;
             jg.render();
           }
         }
@@ -548,7 +527,7 @@
 
       if(jg.mode.showContent) {
         var $projects = $('.jg-project'),
-            timelineOffset = -(jg.timeline.position().left),
+            timelineOffset = -(jg.elements.timeline.position().left),
             complete = false;
 
         for(var i=0;i<$projects.length;i++) {
@@ -576,30 +555,9 @@
       }
     },
 
-    setVerticalHints: function() {
-      var jg = this,
-          offsetTop = -(jg.content.position().top),
-          offsetBottom = jg.content.height() - offsetTop - jg.viewportHeight,
-          glowHeight = 40;
-
-
-      if(offsetTop > glowHeight) {offsetTop = glowHeight;}
-      if(offsetBottom > glowHeight) {offsetBottom = glowHeight;}
-
-      offsetTop = offsetTop / 10;
-      offsetBottom = offsetBottom / 10;
-
-      jg.glowTop.css({
-        boxShadow: "inset 0 "+offsetTop+"px "+(offsetTop * 2)+"px 0 rgba(0,0,0,0.45)"
-      })
-
-      jg.glowBottom.css({
-        boxShadow: "inset 0 -"+offsetBottom+"px "+(offsetBottom * 2)+"px 0 rgba(0,0,0,0.45)"
-      })
-    },
-
     createEvents: function() {
-      var jg = this, options = jg.options,
+      var jg = this,
+          options = jg.options,
           $container = jg.container;
 
       // Move to today
@@ -626,19 +584,84 @@
         jg.render();
       });
 
-      $(".jg-project").off().on("mouseenter mouseleave", function(e) {
+      $container.find(".jg-project").off().on("mouseenter mouseleave", function(e) {
+        projectHeight:
         if(e.type === "mouseenter") {
-          $(this).find(".jg-tasks").animate({ bottom: -15 }, 75);
+          $(this).find(".jg-tasks").show();
         } else {
-          $(this).find(".jg-tasks").animate({ bottom: 0 }, 50);
+          $(this).find(".jg-tasks").hide();
         }
+      })
+    },
+
+    setVerticalHints: function() {
+      var jg = this,
+          $elements = jg.elements,
+          offsetTop = -($elements.content.position().top),
+          offsetBottom = $elements.content.height() - offsetTop - jg.viewportHeight,
+          glowHeight = 40;
+
+
+      if(offsetTop > glowHeight) {offsetTop = glowHeight;}
+      if(offsetBottom > glowHeight) {offsetBottom = glowHeight;}
+
+      offsetTop = offsetTop / 10;
+      offsetBottom = offsetBottom / 10;
+
+      $elements.glowTop.css({
+        boxShadow: "inset 0 "+offsetTop+"px "+(offsetTop * 2)+"px 0 rgba(0,0,0,0.45)"
+      })
+
+      $elements.glowBottom.css({
+        boxShadow: "inset 0 -"+offsetBottom+"px "+(offsetBottom * 2)+"px 0 rgba(0,0,0,0.45)"
       })
     },
 
     // Helper functions
     isBetween: function(first, middle, last) {
       return (first <= middle && middle <= last);
+    },
+
+    createTasks: function(tasks, startDate, containerHeight) {
+      var jg = this,
+          gridX = jg.view.grid.x,
+          tasksLength = tasks.length,
+          elements = [];
+
+      for(var i=0;i<tasksLength;i++) {
+        var task = tasks[i],
+            size = 4,
+            date = moment.unix(task.date),
+            daysSinceStart = Math.abs(date.diff(startDate, "days")),
+            task_left = daysSinceStart * gridX;
+
+        for(var j=i+1;j<tasksLength;j++) {
+          var nextTask = tasks[j];
+          if(nextTask.date === task.date) {
+            if(size + 2 < containerHeight && size + 2 < gridX) {
+              size += 2;
+            }
+            i = j;
+          } else {
+            break;
+          }
+        }
+
+        task_top = (containerHeight / 2) - (size / 2) - 1
+        task_left = task_left + (gridX / 2) - (size / 2)
+
+        elements.push('<div class="jg-task" data-id="'+j+'" '+
+                      'style="'+
+                      'left:'+task_left+'px;'+
+                      'height:'+size+'px;'+
+                      'width:'+size+'px;'+
+                      'border-radius:'+size+'px;'+
+                      'top:'+task_top+'px;'+
+                      '"></div>');
+      }
+      return elements.join('');
     }
+
   };
 
   $.fn[pluginName] = function (data, options) {

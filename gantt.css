@@ -100,6 +100,7 @@
 }
 
 .jg-content .jg-project .jg-data {
+  border-radius: 4px;
   height: 100%;
   width: 100%;
   z-index: 10;
@@ -107,6 +108,7 @@
 
 .jg-content .jg-project .jg-icon {
   background: #FFF;
+  border-radius: 3px 0 0 3px;
   float: left;
   height: 100%;
   margin-top: -3px;
@@ -130,9 +132,12 @@
 }
 
 .jg-content .jg-project .jg-tasks {
+  border-radius: 0 0 4px 4px;
   background: #333;
-  bottom: 0px;
-  height: 80%;
+  bottom: -100%;
+  display: none;
+  height: 100%;
+  padding-top: 3px;
   position: absolute;
   width: 100%;
   z-index: -10;
@@ -147,15 +152,31 @@
   top: 6px;
 }
 
-.jg-viewport .jg-playhead {
-  background: blue;
+.jg-viewport .jg-scrub-timeframe {
+  background: #a7daee;
   height: 350px;
-  left: 80px;
   opacity: 0.4;
   position: absolute;
   top: 52px;
-  width: 3px;
+  width: 1px;
   z-index: 1;
+}
+
+.jg-viewport .jg-scrub {
+  background: #00a5e3;
+  height: 100%;
+  opacity: 1;
+  padding: 0 1px;
+  position: absolute;
+  top: 52px;
+}
+
+.jg-viewport .jg-scrub .jg-scrub-inner {
+  background: #71d1f6;
+  border-left: 1px solid #4dc6f4;
+  border-right: 1px solid #00aeef;
+  height: 100%;
+  width: 1px;
 }
 
 .jg-grid {

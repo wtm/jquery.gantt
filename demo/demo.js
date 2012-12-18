@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  var projectCount = 800,
+  var projectCount = 500,
       colors = ["red", "green", "brown", "purple", "pink", "orange"],
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       data = { projects: [], tasks: [] };
