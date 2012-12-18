@@ -13,7 +13,7 @@ h1 { text-align: center; }
 #nav { text-align: center; }
 
 ul { list-style: none; padding: 0; }
-ul.description li { margin-bottom: 8px; }
+ul li { margin-bottom: 6px; }
 
 .hr {
   background: #DDD;
