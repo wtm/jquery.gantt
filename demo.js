@@ -1,4 +1,8 @@
 $(document).ready(function() {
+
+  // --------------------------------------------------------------------
+  // - Create some random fake data
+  // --------------------------------------------------------------------
   var projectCount = 500,
       colors = ["red", "green", "brown", "purple", "pink", "orange"],
       months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
@@ -44,7 +48,7 @@ $(document).ready(function() {
     project = {
       id: i,
       name: "DEMO ",
-      iconURL: "wtm.png",
+      iconURL: "template/wtm_logo.png",
       startDate: startDate,
       endDate: endDate,
       color: color,
@@ -64,33 +68,34 @@ $(document).ready(function() {
 
   $(".container").gantt(data);
 
+
+  // --------------------------------------------------------------------
+  // - Filters
+  // --------------------------------------------------------------------
   $(".container .jg-task").on("mouseenter mouseleave", function() {
     console.log("Task hover, the ID is:", $(this).data("id"));
   })
 
-  $('.controls .views a').on("click", function(e) {
+  $('.filter.views button').on("click", function(e) {
     e.preventDefault();
-    $(".container").trigger("gantt-changeView", $(this).attr("class"));
+    $(".container").trigger("gantt-changeView", $(this).data("attr"));
   });
 
-  $('.controls .modes a').on("click", function(e) {
+  $('.filter.modes button').on("click", function(e) {
     e.preventDefault();
-    $(".container").trigger("gantt-changeMode", $(this).attr("class"))
+    $(".container").trigger("gantt-changeMode", $(this).data("attr"))
   });
 
-  $('.controls .filters select').on("change", function(e) {
+  $('.filter.filters select').on("change", function(e) {
     e.preventDefault();
-    filter = { color: $(this).val() }
+    value = $(this).val().length;
+    filter = value ? { color: $(this).val() } : null;
     $(".container").trigger("gantt-filterBy", filter);
   });
 
-  $('.controls .filters a').on("click", function(e) {
+  $('.filter.filters a').on("click", function(e) {
     e.preventDefault();
     $(".container").trigger("gantt-filterBy", null);
-  });
-
-  $('.controls .moveto a').on("click", function(e, date) {
-    e.preventDefault();
-    $(".container").trigger("gantt-moveto", null);
+    $('select option:selected').removeAttr("selected");
   });
 })

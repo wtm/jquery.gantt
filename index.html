@@ -1,45 +1,48 @@
 <!DOCTYPE html>
   <head>
     <title>jQuery.Gantt Demo</title>
-    <link rel="stylesheet" href="vendor/jquery.gantt.css" />
-    <link rel="stylesheet" href="demo.css" />
+
+    <!-- Required Libraries -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script type="text/javascript" src="vendor/moment.min.js"></script>
-    <script type="text/javascript" src="vendor/jquery.gantt.min.js"></script>
+    <script type="text/javascript" src="core/vendor/moment.min.js"></script>
+
+    <!-- Core Files -->
+    <link rel="stylesheet" href="core/jquery.gantt.css" />
+    <script type="text/javascript" src="core/jquery.gantt.min.js"></script>
+
+    <!-- Demo Files (Not Required) -->
+    <link rel="stylesheet" href="demo.css" />
     <script type="text/javascript" src="demo.js"></script>
+
+    <!-- Template Files (Not Required) -->
+    <link rel="stylesheet" href="template/bootstrap.min.css" />
+    <link rel="stylesheet" href="template/template.css" />
+    <script type="text/javascript" src="template/template.js"></script>
   </head>
   <body>
-    <a href="https://github.com/McPants/jquery.shapeshift" class="forkme"><img src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png" alt="Fork me on GitHub"></a>
-    <h1>jQuery.Gantt Demo</h1>
+    <header>
+      <a href="https://github.com/wtm/jquery.gantt" class="fork-me">
+        <img src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png" alt="Fork me on GitHub">
+      </a>
+      <h1><a href="https://github.com/wtm/jquery.gantt">jQuery.Gantt Demo</a></h1>
+      <div class="description">
+        <ul>
+          <li><strong>Gantt Chart:</strong> All items flow from top to bottom, left to right.</li>
+          <li><strong>Gantt Chart:</strong> All items flow from top to bottom, left to right.</li>
+        </ul>
+      </div>
+      <a href="http://www.wtmworldwide.com/" class="wtm-logo">
+        <div>Maintained by:</div>
+        <img src="template/wtm_logo.png" alt="We the Media Logo" />
+        <div>We the Media, inc.</div>
+      </a>
+    </header>
 
-    <div id="nav">
-      <ul class="description">
-        <li><strong>Gantt Chart:</strong>All items flow from top to bottom, left to right.</li>
-        <li><strong>Gantt Chart:</strong>All items flow from top to bottom, left to right.</li>
-        <li><strong>Gantt Chart:</strong>All items flow from top to bottom, left to right.</li>
-      </ul>
-    </div>
     <div class="hr"></div>
 
-    <ul class="controls">
-      <li class="views">
-        <h3>Views:</h3>
-        <ul>
-          <li><a href="#" class="year">Year</a></li>
-          <li><a href="#" class="month">Month</a></li>
-          <li><a href="#" class="week">Week</a></li>
-        </ul>
-      </li>
-      <li class="modes">
-        <h3>Modes:</h3>
-        <ul>
-          <li><a href="#" class="regular">Regular</a></li>
-          <li><a href="#" class="huge">Huge</a></li>
-          <li><a href="#" class="collapsed">Collapsed</a></li>
-        </ul>
-      </li>
-      <li class="filters">
-        <h3>Filters:</h3>
+    <nav>
+      <div class="filter filters">
+        <h6>Filters <a href="#">Clear</a></h6>
         <select multiple>
           <option value="red">red</option>
           <option value="green">green</option>
@@ -47,10 +50,27 @@
           <option value="orange">orange</option>
           <option value="brown">brown</option>
         </select>
-        <a href="#" class="clear">Clear</a>
-      </li>
-      <li class="others"><h3>Others:</h3></li>
-    </ul>
+
+      </div>
+      <div class="filter views">
+        <h6>Views</h6>
+        <div class="btn-group">
+          <button class="btn active" data-attr="year">Year</a>
+          <button class="btn" data-attr="month">Month</a>
+          <button class="btn" data-attr="week">Week</a>
+        </div>
+      </div>
+      <div class="filter modes">
+        <h6>Modes</h6>
+        <div class="btn-group">
+          <button class="btn" data-attr="collapsed">Collapsed</a>
+          <button class="btn active" data-attr="regular">Regular</a>
+          <button class="btn" data-attr="large">Large</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="hr"></div>
 
     <div class="container"></div>
   </body>
