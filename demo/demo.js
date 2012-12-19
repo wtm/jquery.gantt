@@ -76,24 +76,24 @@ $(document).ready(function() {
     console.log("Task hover, the ID is:", $(this).data("id"));
   })
 
-  $('.filter.views button').on("click", function(e) {
+  $('.filters .views button').on("click", function(e) {
     e.preventDefault();
     $(".container").trigger("gantt-changeView", $(this).data("attr"));
   });
 
-  $('.filter.modes button').on("click", function(e) {
+  $('.filters .modes button').on("click", function(e) {
     e.preventDefault();
     $(".container").trigger("gantt-changeMode", $(this).data("attr"))
   });
 
-  $('.filter.filters select').on("change", function(e) {
+  $('.filters .filter select').on("change", function(e) {
     e.preventDefault();
     value = $(this).val().length;
     filter = value ? { color: $(this).val() } : null;
     $(".container").trigger("gantt-filterBy", filter);
   });
 
-  $('.filter.filters a').on("click", function(e) {
+  $('.filters .filter a').on("click", function(e) {
     e.preventDefault();
     $(".container").trigger("gantt-filterBy", null);
     $('select option:selected').removeAttr("selected");
