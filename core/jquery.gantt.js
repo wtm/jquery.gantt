@@ -632,7 +632,7 @@
         var task = tasks[i],
             size = 4,
             date = moment.unix(task.date),
-            daysSinceStart = Math.abs(date.diff(startDate, "days")),
+            daysSinceStart = date.diff(startDate, "days"),
             task_left = daysSinceStart * gridX;
 
         for(var j=i+1;j<tasksLength;j++) {
@@ -656,7 +656,7 @@
                       'height:'+size+'px;'+
                       'width:'+size+'px;'+
                       'top:'+task_top+'px;'+
-                      '"></div>');
+                      '">'+moment.unix(task.date).format("MMM, DD, YY")+'</div>');
       }
       return elements.join('');
     }
