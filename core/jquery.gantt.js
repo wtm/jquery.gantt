@@ -101,7 +101,12 @@
                             '<div class="jg-glow"></div>' +
                           '</div>' +
                         '</div>' +
-                        '<div class="jg-scrub"><div class="jg-inner"></div></div>' +
+                        '<div class="jg-scrub">' +
+                          '<div class="jg-scrub-inner"></div>' +
+                          '<div class="jg-handle">' +
+                            '<div class="jg-handle-inner"></div>' +
+                          '</div>' +
+                        '</div>' +
                         '<div class="jg-scrub-timeframe"></div>' +
                         '<canvas class="jg-grid"></canvas>' +
                       '</div>';
@@ -630,7 +635,7 @@
 
       for(var i=0;i<tasksLength;i++) {
         var task = tasks[i],
-            size = 4,
+            size = 5,
             date = moment.unix(task.date),
             daysSinceStart = date.diff(startDate, "days") + offset,
             task_left = daysSinceStart * gridX;
@@ -647,7 +652,7 @@
           }
         }
 
-        task_top = (containerHeight / 2) - (size / 2) - 1
+        task_top = (containerHeight / 2) - (size / 2)
         task_left = task_left + (gridX / 2) - (size / 2)
 
         elements.push('<div class="jg-task" data-id="'+j+'" '+

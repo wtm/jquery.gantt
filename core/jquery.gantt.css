@@ -59,6 +59,7 @@
   background: #EFEFEF;
   border: 1px solid #000;
   border-radius: 900px;
+  box-sizing: border-box;
   position: absolute;
 }
 
@@ -136,12 +137,24 @@
   top: 52px;
 }
 
-.jg-viewport .jg-scrub .jg-inner {
+.jg-viewport .jg-scrub .jg-scrub-inner {
   background: #71d1f6;
   border-left: 1px solid #4dc6f4;
   border-right: 1px solid #00aeef;
   height: 100%;
   width: 1px;
+}
+
+.jg-viewport .jg-scrub .jg-handle {
+  border-bottom: 10px solid #00a5e3;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  bottom: 52px;
+  height: 0;
+  position: absolute;
+  left: -8px;
+  width: 0;
+  z-index: 600;
 }
 
 .jg-grid { display: none; }
