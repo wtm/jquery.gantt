@@ -37,7 +37,7 @@ $(document).ready(function() {
         date = null;
 
     for(j=0;j<taskCount;j++) {
-      date = moment(startDate).add("days", Math.random() * days).add("hours", 18);
+      date = moment(startDate).subtract("days", Math.random() * days).add("hours", 18);
       task = {
         date: date.format("MMMM D, YYYY")
       }
