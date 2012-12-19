@@ -53,6 +53,7 @@ ul { list-style: none; padding: 0; }
 
 nav {
   margin: 0 auto;
+  text-align: center;
   width: 90%;
 }
 
@@ -65,17 +66,21 @@ nav:after {
   height: 0;
 }
 
-nav .filter {
+nav ul {
+  display: inline-block;
+}
+
+nav ul li {
   float: left;
   margin: 0 30px 20px 0;
 }
 
-nav .filter h6 {
+nav ul li h6 {
   margin: 0 0 10px 3px;
   font-size: 12px;
 }
 
-nav .filter h6 a {
+nav ul li h6 a {
   float: right;
   text-decoration: none;
 }
