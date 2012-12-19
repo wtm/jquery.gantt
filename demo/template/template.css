@@ -52,7 +52,6 @@ ul { list-style: none; padding: 0; }
 }
 
 nav {
-  min-height: 100px;
   margin: 0 auto;
   width: 90%;
 }
