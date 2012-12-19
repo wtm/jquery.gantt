@@ -350,7 +350,7 @@
             startDate = moment.unix(project.startDate),
             endDate = moment.unix(project.endDate),
             daysBetween = endDate.diff(startDate, "days") + 1,
-            daysSinceStart = startDate.diff(jg.startMoment, "days"),
+            daysSinceStart = startDate.diff(jg.startMoment, "days") + 1,
 
             // Element Attributes
             el_width = daysBetween * gridX - 1,
@@ -420,7 +420,7 @@
         if(mode.showContent) {
           // Create tasks
           elements.push('<div class="jg-tasks">'); // Close jg-data
-          elements.push(jg.createTasks(project.tasks, startDate, el_height))
+          elements.push(jg.createTasks(project.tasks, startDate, el_height, 0))
           elements.push("</div>"); // Close jg-tasks
         }
         elements.push("</div>"); // Close jg-project
@@ -442,7 +442,7 @@
       $elements.content.append(elements.join('')).css({ height: content_height });
 
       // TASKS
-      $elements.tasks.append(jg.createTasks(tasks, jg.startMoment, jg.tasksHeight));
+      $elements.tasks.append(jg.createTasks(tasks, jg.startMoment, jg.tasksHeight, 1));
     },
 
     dragInit: function() {
@@ -622,7 +622,7 @@
       return (first <= middle && middle <= last);
     },
 
-    createTasks: function(tasks, startDate, containerHeight) {
+    createTasks: function(tasks, startDate, containerHeight, offset) {
       var jg = this,
           gridX = jg.view.grid.x,
           tasksLength = tasks.length,
@@ -632,7 +632,7 @@
         var task = tasks[i],
             size = 4,
             date = moment.unix(task.date),
-            daysSinceStart = date.diff(startDate, "days"),
+            daysSinceStart = date.diff(startDate, "days") + offset,
             task_left = daysSinceStart * gridX;
 
         for(var j=i+1;j<tasksLength;j++) {
@@ -656,7 +656,7 @@
                       'height:'+size+'px;'+
                       'width:'+size+'px;'+
                       'top:'+task_top+'px;'+
-                      '">'+moment.unix(task.date).format("MMM, DD, YY")+'</div>');
+                      '"></div>');
       }
       return elements.join('');
     }
