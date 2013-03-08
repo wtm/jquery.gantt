@@ -26,7 +26,7 @@
   function Gantt(element, data, options) {
     var jg = this;
     jg.container = $(element);
-    jg.options = $.extend({}, defaults, options);
+    jg.options = $.extend(true, {}, defaults, options);
     jg.data = data;
     jg.init();
   }
