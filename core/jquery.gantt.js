@@ -500,10 +500,11 @@
             } else {
               // Move vertically
               var marginTop = positions.y + (e.pageY - mouse.y),
-                  maxMargin = -(contentHeight - viewportHeight);
+                  overflowHeight = -(contentHeight - viewportHeight);
 
-              if(marginTop > 0) { marginTop = 0; }
-              if(marginTop < maxMargin) { marginTop = maxMargin; }
+              // Cap `marginTop` to the range `overflowHeight..0`
+              marginTop = Math.max(Math.min(marginTop, 0), overflowHeight);
+
               $elements.content.css({ top: marginTop });
               jg.setVerticalHints();
             }
@@ -606,17 +607,12 @@
           offsetBottom = $elements.content.height() - offsetTop - jg.viewportHeight,
           glowHeight = 40;
 
-
-      if(offsetTop > glowHeight) {offsetTop = glowHeight;}
-      if(offsetBottom > glowHeight) {offsetBottom = glowHeight;}
-
-      offsetTop = offsetTop / 10;
-      offsetBottom = offsetBottom / 10;
-
+      offsetTop = Math.min(offsetTop, glowHeight) / 10;
       $elements.glowTop.css({
         boxShadow: "inset 0 "+offsetTop+"px "+(offsetTop * 2)+"px 0 rgba(0,0,0,0.45)"
       })
 
+      offsetBottom = Math.min(offsetBottom, glowHeight) / 10;
       $elements.glowBottom.css({
         boxShadow: "inset 0 -"+offsetBottom+"px "+(offsetBottom * 2)+"px 0 rgba(0,0,0,0.45)"
       })
