@@ -184,12 +184,13 @@
 
 				# Determine if it is filtered
 				visible = true
-				for filter in options.filter
-					visible = false
-					theFilter = options.filter[filter]
+				if options.filter?
+					for filter in options.filter
+						visible = false
+						theFilter = options.filter[filter]
 
-					for x in theFilter
-						visible = project[filter] is theFilter[x]
+						for x in theFilter
+							visible = project[filter] is theFilter[x]
 
 				if visible and (isBetweenStart or isBetweenEnd)
 					activeProjects.push project
