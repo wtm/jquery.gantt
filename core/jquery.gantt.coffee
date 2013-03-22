@@ -259,7 +259,7 @@
 			labels = []
 
 			# Iterate over each day
-			for day in @daysInGrid
+			for day in [1..@daysInGrid]
 				curMoment = moment(@startMoment).add "days", day
 				format = false
 
