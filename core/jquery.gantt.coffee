@@ -55,7 +55,7 @@
 			# Go over each Project
 			for project in projects
 				# Convert to Unix time.
-				if isNaN project.startDate
+				unless typeof(project.startDate) is "number"
 					project.startDate = moment(project.startDate).unix()
 					project.endDate = moment(project.endDate).unix()
 
