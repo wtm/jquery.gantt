@@ -2,6 +2,7 @@
   var pluginName = "gantt",
       defaults = {
         filter: {},
+        gridColor: "#ddd"
         mode: "regular",
         modes: {
           regular: { scale: 2, paddingX: 2, paddingY: 1, showContent: true },
@@ -12,13 +13,13 @@
         view: "year",
         views: {
           week: {
-            grid: { color: "#DDD", x: 150, y: 10 },
+            grid: { x: 150, y: 10 },
             format: "MMM DD", labelEvery: "day", preloadDays: 60, dayOffset: 1, highlightDays: 7 },
           month: {
-            grid: { color: "#DDD", x: 42, y: 10 },
+            grid: { x: 42, y: 10 },
             format: "MMM DD", labelEvery: "day", preloadDays: 30, dayOffset: 3, highlightDays: 10 },
           year: {
-            grid: { color: "#DDD", x: 13, y: 10 },
+            grid: { x: 13, y: 10 },
             format: "MMM", labelEvery: "month", preloadDays: 0, dayOffset: 5, highlightDays: 10 }
         }
       };
@@ -249,7 +250,7 @@
       ctx.moveTo(gridX - 0.5, -0.5);
       ctx.lineTo(gridX - 0.5, gridY - 0.5);
       ctx.lineTo(-0.5,gridY - 0.5);
-      ctx.strokeStyle = view.grid.color;
+      ctx.strokeStyle = options.gridColor;
       ctx.stroke();
 
       // Create a repeated image from canvas

@@ -2,6 +2,7 @@
 	pluginName = "gantt"
 	defaults =
 		filter: {}
+		gridColor: "#ddd"
 		mode: "regular"
 		modes:
 			regular: { scale: 2, paddingX: 2, paddingY: 1, showContent: true }
@@ -13,21 +14,21 @@
 			week:
 				dayOffset: 1
 				format: "MMM DD"
-				grid: { color: "#DDD", x: 150, y: 10 }
+				grid: { x: 150, y: 10 }
 				highlightDays: 7
 				labelEvery: "day"
 				preloadDays: 60
 			month:
 				dayOffset: 3
 				format: "MMM DD"
-				grid: { color: "#DDD", x: 42, y: 10 }
+				grid: { x: 42, y: 10 }
 				highlightDays: 10
 				labelEvery: "day"
 				preloadDays: 30
 			year:
 				dayOffset: 5
 				format: "MMM"
-				grid: { color: "#DDD", x: 13, y: 10 }
+				grid: { x: 13, y: 10 }
 				highlightDays: 10
 				labelEvery: "month"
 				preloadDays: 0
@@ -217,7 +218,7 @@
 			ctx.moveTo gridX - 0.5, -0.5
 			ctx.lineTo gridX - 0.5, gridY - 0.5
 			ctx.lineTo -0.5, gridY - 0.5
-			ctx.strokeStyle = view.grid.color
+			ctx.strokeStyle = @options.gridColor
 			ctx.stroke()
 
 			# Create a repeated image from canvas
