@@ -52,7 +52,7 @@
         project = projects[i];
 
         // Convert to Unix time.
-        if(isNaN(project.startDate)) {
+        if("number" === !typeof project.startDate) {
           project.startDate = moment(project.startDate).unix();
           project.endDate = moment(project.endDate).unix();
         }
